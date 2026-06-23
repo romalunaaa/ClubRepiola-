@@ -1,0 +1,14 @@
+[theme]
+# Color principal (Rosa fuerte para botones, barras de selección y enlaces)
+primaryColor = "#E63380" 
+
+# El celeste de tu logo para toda la app
+backgroundColor = "#A0D2EB"
+
+# El gris oscuro exacto del fondo de tu logo para los fondos de los bloques secundarios o barra lateral
+secondaryBackgroundColor = "#404040"
+
+# Color del texto (Blanco para que contraste perfectamente sobre el fondo gris oscuro)
+textColor = "#FFFFFF"
+
+font = "sans serif"
