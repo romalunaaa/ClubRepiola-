@@ -1,1 +1,16 @@
 
+[theme]
+# Fondo principal de la app (Un gris oscuro/casi negro para que contrasten los neones)
+backgroundColor = "#121212"
+
+# Fondo de la barra lateral (El mismo color del fondo del logo)
+sidebarBackgroundColor = "#4a4748"
+
+# Color de fondo de las cajas de texto, inputs y formularios
+secondaryBackgroundColor = "#242424"
+
+# Color del texto principal (Blanco puro para máxima legibilidad)
+textColor = "#FFFFFF"
+
+# Color de los botones primarios y elementos activos (Usamos tu Rosa Magenta)
+primaryColor = "#E11D74"
