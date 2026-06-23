@@ -1,142 +1,200 @@
-import streamlit as st
-import pandas as pd
+# ==============================================================================
+# PARCHE DE COMPATIBILIDAD PYTHON 3.13 + STREAMLIT
+# ==============================================================================
+import builtins
+import importlib
+import os
+import sys
+
+if not hasattr(builtins, "sys"):
+    builtins.sys = sys
+if "sys" not in sys.modules:
+    sys.modules["sys"] = sys
+
 from datetime import datetime
+import pandas as pd
+import requests
+import streamlit as st
 
-# Configuración de página de Streamlit
+# ==============================================================================
+# CONFIGURACIÓN DE PÁGINA DE STREAMLIT
+# ==============================================================================
 st.set_page_config(
-    page_title="Club Repiola - Reservas",
-    page_icon="🍹",
-    layout="centered"
+    page_title="Club Repiola - Reservas", layout="centered"
 )
-
-# ==============================================================================
-# 0. CONEXIÓN DIRECTA A GOOGLE SHEETS
-# ==============================================================================
-sheet_id = "17yiKj6vXnbO5tYycEw4LZb_Ofr5URmitet6_1vGzIrw"
-csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
-
-try:
-    datos_existentes = pd.read_csv(csv_url)
-except Exception as e:
-    st.error(f"Error al conectar con Google Sheets: {e}")
-    datos_existentes = pd.DataFrame() # Respaldo vacío por si falla
-
 
 # ==============================================================================
 # 1. BARRA LATERAL (BRANDBOARD E INFORMACIÓN DE LA PYME)
 # ==============================================================================
 with st.sidebar:
-    # Aquí cambiamos a "logorepiola.jpg"
     try:
         st.image("logorepiola.jpg", use_container_width=True)
     except:
-        st.subheader("🎵 Club Repiola Bar")
-    
+        st.subheader("Club Repiola")
+
     st.markdown("---")
+    
+    # Horario con icono predeterminado
     st.markdown("### 🕒 Horario Otoño")
     st.write("• **Jueves:** 18:00 a 24:00 hrs")
     st.write("• **Viernes y Sábado:** 18:00 a 03:00 hrs")
     st.write("• **Domingo:** Solo Eventos reservados.")
-    
+
     st.markdown("---")
+    
+    # Ubicación con icono predeterminado
     st.markdown("### 📍 Ubicación")
     st.caption("Vicuña Rozas 5032, Quinta Normal, Santiago, Chile")
-    
+
     st.markdown("---")
-    st.markdown("### 📞 Contacto Soporte")
-    st.success("[WhatsApp +56 9 9677 7779](https://wa.me/56996777779)")
+    
+    # WhatsApp con icono predeterminado
+    st.markdown("### 📞 WhatsApp")
+    st.success("[+56 9 9677 7779](https://wa.me/56996777779)")
 
 
 # ==============================================================================
 # 2. CUERPO PRINCIPAL DE LA APP
 # ==============================================================================
+# REEMPLAZO DEL TÍTULO POR TU IMAGEN DE TÍTULO
+try:
+    # Asegúrate de guardar tu imagen de título con este nombre en la misma carpeta
+    st.image("titulo_repiola.png", use_container_width=True)
+except:
+    # Respaldo en texto plano si la imagen no se encuentra
+    st.title("Club Repiola")
 
-# El título principal usará por defecto el Rosa Fuerte (primaryColor) en los detalles
-st.title("🍹 Reserva tu Mesa en Club Repiola")
-st.markdown("Asegura tu preventa o espacio completando el formulario. Los cupos son limitados.")
+st.subheader("Reserva tu Mesa")
+st.markdown(
+    "Asegura tu espacio completando el formulario. Los cupos son limitados combinando música, ritmo y buena vibra."
+)
 st.write("---")
 
-# USANDO EL COLOR CELESTE: Para mensajes informativos importantes
-st.info("💡 **Dato Repiola:** Las reservas se mantienen hasta 20 minutos después de la hora acordada.")
+# Secciones de alertas limpias, sin iconos
+st.info("**Dato Repiola:** Las reservas se mantienen hasta 30 minutos después de la hora acordada.")
+st.warning("Cupos Limitados. Viernes y Sábados los cupos se llenan rápido.")
 
-# USANDO EL COLOR AMARILLO: Para advertencias o secciones de alta atención
-st.warning("⚠️ **¡Cupos Limitados!** Jueves y Sábados suelen llenarse rápido.")
+st.write("") 
 
-# Mostrar la tabla que viene de tu Google Sheet
-if not datos_existentes.empty:
-    st.markdown("### 📊 Reservas Actuales")
-    st.dataframe(datos_existentes)
-import pandas as pd
-import streamlit as st
-
-# 1. Tu URL de Google Sheets
-url = "https://docs.google.com/spreadsheets/d/17yiKj6vXnbO5tYycEw4LZb_Ofr5URmitet6_1vGzIrw/edit?usp=sharing"
-
-# 2. Transformamos el enlace automáticamente para que sea un CSV descargable
-csv_url = url.replace("/edit?usp=sharing", "/export?format=csv")
-
-# 3. Leemos los datos directamente usando Pandas (sin usar st.connection)
-datos_existentes = pd.read_csv(csv_url)
-
-# Tarjeta informativa con los datos CuentaRUT BancoEstado
-st.markdown("""
-<div style="background-color: #1e1a3a; padding: 20px; border-radius: 10px; border: 1px solid #ff007f;">
-    <h4 style="color: #ff007f; margin-top:0;">💳 Instrucciones de Abono (CuentaRUT):</h4>
-    <p style="margin-bottom: 5px;">Realiza la transferencia para congelar tu mesa de forma inmediata:</p>
-    <ul>
-        <li><b>Banco:</b> BancoEstado (CuentaRUT)</li>
-        <li><b>Número de Cuenta:</b> 96777779 <i>(RUT del bar sin guion)</i></li>
-        <li><b>Monto Abono:</b> $10.000</li>
-        <li><b>Correo:</b> contacto@clubrepiola.cl</li>
+# Tarjeta de transferencia limpia, sin imágenes superiores ni iconos internos
+st.markdown(
+    """
+<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74; box-shadow: 0px 4px 15px rgba(225, 29, 116, 0.2);">
+    <h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">Instrucciones de Abono (CuentaRUT):</h4>
+    <p style="margin-bottom: 15px; color: #FFFFFF;">Realiza la transferencia para congelar tu mesa de forma inmediata con toda la onda:</p>
+    <ul style="color: #00A8CC; list-style-type: square;">
+        <li><b style="color: #FFFFFF;">Banco:</b> BancoEstado (CuentaRUT)</li>
+        <li><b style="color: #FFFFFF;">Número de Cuenta:</b> 11.633.847-5</li>
+        <li><b style="color: #FFFFFF;">Monto Abono:</b> $10.000</li>
+        <li><b style="color: #FFFFFF;">Correo:</b> clubrepiola@gmail.com</li>
     </ul>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-st.write("") # Espacio en blanco
+st.write("")
 
-# Formulario Estilizado de Reserva
+# ==============================================================================
+# 3. FORMULARIO DE RESERVA
+# ==============================================================================
 with st.form("formulario_reserva"):
-    st.subheader("✨ Completa tus datos")
-    
+    st.subheader("Completa tus datos")
+
     evento_seleccionado = st.selectbox(
-        "Selecciona el Evento / Fecha", 
-        ["Viernes de Karaoke (18:00 hrs)", "Sábado Club General (18:00 hrs)", "Evento Especial - Lanzamiento"]
+        "Selecciona el Evento / Fecha",
+        [
+            "Jueves de Poesía (21:00 hrs)",
+            "Viernes de Karaoke (22:00 hrs)",
+            "Evento Especial - Lanzamiento Repiola",
+        ],
     )
-    
+
     mesa_seleccionada = st.selectbox(
-        "Selecciona tu Mesa preferida", 
-        ["Mesa Vip 1", "Mesa Vip 2", "Mesa General A", "Mesa General B", "Terraza 1"]
+        "Selecciona tu Mesa preferida",
+        ["Mesa para 1", "Mesa para 2", "Terraza(Exterior)", "Mesa para 3"],
     )
-    
+
     nombre = st.text_input("Nombre Completo de quien asiste")
     rut = st.text_input("RUT del Titular (Para validar transferencia)")
-    
-    foto = st.file_uploader("📸 Sube la captura de tu transferencia BancoEstado", type=["jpg", "png", "jpeg"])
-    
-    boton_confirmar = st.form_submit_button("🚀 Enviar y Congelar Mesa")
 
-# Lógica de Guardado en Sheets
+    boton_confirmar = st.form_submit_button("Enviar y Congelar Mesa")
+
+
+# ==============================================================================
+# 4. LÓGICA DE ENVÍO INVISIBLE + REDIRECCIÓN A WHATSAPP
+# ==============================================================================
 if boton_confirmar:
-    if nombre and rut and foto is not None:
+    if nombre and rut:
         try:
-            datos_existentes = conn.read(spreadsheet= "https://docs.google.com/spreadsheets/d/17yiKj6vXnbO5tYycEw4LZb_Ofr5URmitet6_1vGzIrw/edit?usp=sharing")
-            
-            nueva_reserva = pd.DataFrame([{
-                "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "Evento": evento_seleccionado,
-                "Mesa": mesa_seleccionada,
-                "Nombre": nombre,
-                "RUT": rut,
-                "Estado": "Pendiente"
-            }])
-            
-            datos_actualizados = pd.concat([datos_existentes, nueva_reserva], ignore_index=True)
-            conn.update(spreadsheet=URL_PLANILLA, data=datos_actualizados)
-            
-            st.balloons() # Animación festiva de éxito
-            st.success("¡Reserva recibida! Tu mesa ya está pre-asignada. El equipo de Club Repiola validará el abono en la App de BancoEstado.")
-            
+            url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
+
+            datos_reserva_forms = {
+                "entry.2041447904": evento_seleccionado,
+                "entry.44496726": mesa_seleccionada,
+                "entry.970850673": nombre,
+                "entry.2047753483": rut,
+            }
+
+            respuesta = requests.post(url_formulario, data=datos_reserva_forms)
+
+            if respuesta.status_code == 200:
+                datos_nueva_reserva = {
+                    "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "Evento": evento_seleccionado,
+                    "Mesa": mesa_seleccionada,
+                    "Nombre": nombre,
+                    "RUT": rut,
+                    "Estado": "Pendiente",
+                }
+                nueva_reserva_df = pd.DataFrame([datos_nueva_reserva])
+                nueva_reserva_df.to_csv(
+                    "reservas_local.csv",
+                    mode="a",
+                    header=not os.path.exists("reservas_local.csv"),
+                    index=False,
+                )
+
+                st.balloons()
+                st.success("¡Datos registrados con éxito!")
+
+                mensaje_wa = (
+                    f"¡Hola! Acabo de registrar una reserva en Club Repiola.\n\n"
+                    f"👤 *Nombre:* {nombre}\n"
+                    f"🆔 *RUT:* {rut}\n"
+                    f"📅 *Evento:* {evento_seleccionado}\n"
+                    f"🪑 *Mesa:* {mesa_seleccionada}\n\n"
+                    f"Aquí adjunto el comprobante de transferencia."
+                )
+
+                mensaje_codificado = requests.utils.quote(mensaje_wa)
+                url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
+
+                st.markdown(
+                    """
+                <div style="background-color: rgba(225, 29, 116, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed #E11D74; margin-bottom: 15px;">
+                    <p style="margin: 0; color: #E11D74; font-weight: bold; text-align: center;">
+                        ⚠️ ¡ÚLTIMO PASO OBLIGATORIO! ⚠️
+                    </p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px; text-align: center; color: #FFFFFF;">
+                        Para validar tu abono y confirmar tu mesa, presiona el botón de abajo para abrir WhatsApp y <b>enviarnos la captura del comprobante</b>.
+                    </p>
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+
+                st.link_button(
+                    "Enviar Comprobante por WhatsApp",
+                    url_whatsapp,
+                    type="primary",
+                    use_container_width=True,
+                )
+
+            else:
+                st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
+
         except Exception as e:
-            st.error(f"Error de conexión con la base de datos: {e}")
+            st.error(f"Error al procesar la reserva: {e}")
     else:
-        st.warning("Por favor, asegúrate de llenar tu nombre, RUT y cargar el comprobante antes de enviar.")
+        st.warning("Por favor, rellena tu Nombre y tu RUT antes de enviar la solicitud.")
