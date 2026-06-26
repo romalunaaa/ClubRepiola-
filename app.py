@@ -127,6 +127,14 @@ if st.session_state.selectbox_evento != st.session_state.evento_actual:
 with st.form("formulario_reserva"):
     st.subheader("Completa tus datos")
 
+    # 🚨 AVISO DE PAGO INMEDIATO (Para que lo vean apenas seleccionen el evento)
+    if evento_seleccionado == "Sábado de Karaoke (22:00 hrs)":
+        st.success("✅ **Este evento es de Entrada Liberada ($0).** Solo dejas propina voluntaria a la animadora en el local.")
+    else:
+        st.error("💳 **Este evento requiere Adhesión Voluntaria (Desde $3.000).** Recuerda revisar los datos de transferencia en la tarjeta de arriba.")
+
+    st.write("")
+
     # 📝 DESCRIPCIONES DINÁMICAS SEGÚN EL EVENTO SELECCIONADO
     if evento_seleccionado == "Sábado de Karaoke (22:00 hrs)":
         st.markdown("*🎤 **Sobre este evento:** ¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios. Ideal para venir con amigos del trabajo o celebrar cumpleaños en un ambiente ultra prendido.*")
