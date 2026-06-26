@@ -16,48 +16,21 @@ if "sys" not in sys.modules:
     sys.modules["sys"] = sys
 
 # ==============================================================================
-# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (Tarjetas como Botones)
+# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (Diseño Limpio y Seguro)
 # ==============================================================================
 st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
 
-# ==============================================================================
-# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (Tarjetas como Botones Corregido)
-# ==============================================================================
-st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
-
-# CSS modificado para renderizar el HTML correctamente dentro del botón
+# CSS seguro para las tarjetas contenedoras (Markdown)
 st.markdown("""
     <style>
-    /* TRUCO CLAVE: Permite que Streamlit procese código HTML dentro de los botones */
-    div.stButton > button p {
-        display: none !important;
+    .event-card {
+        background-color: #1A1A1A;
+        border: 1px solid #333;
+        border-left: 5px solid #E11D74;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 5px;
     }
-    div.stButton > button::after {
-        content: attr(data-testid); /* Respaldo básico */
-        display: none;
-    }
-    
-    /* Estilizar el botón para que parezca una tarjeta */
-    div.stButton > button {
-        background-color: #1A1A1A !important;
-        border: 1px solid #333 !important;
-        border-left: 5px solid #E11D74 !important;
-        border-radius: 15px !important;
-        padding: 20px !important;
-        width: 100% !important;
-        text-align: left !important;
-        margin-bottom: 15px !important;
-        display: block !important;
-        height: auto !important;
-    }
-    
-    /* Efecto Hover al pasar el mouse */
-    div.stButton > button:hover {
-        border-color: #E11D74 !important;
-        background-color: #222222 !important;
-    }
-    
-    /* Estilos para los textos internos que ahora sí se pintarán bien */
     .card-title { color: #FFD31D !important; font-size: 22px !important; font-weight: bold !important; margin-bottom: 5px !important; font-family: sans-serif !important; }
     .card-date { color: #00A8CC !important; font-size: 16px !important; margin-bottom: 10px !important; font-family: sans-serif !important; }
     .badge-pago { background-color: #E11D74 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
@@ -67,9 +40,8 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS (Modificable)
+# BASE DE DATOS DE EVENTOS
 # ==============================================================================
-# Tipos soportados: 'reserva_gratis', 'reserva_pago', 'solo_info'
 EVENTOS = [
     {
         "id": "karaoke_01",
@@ -107,12 +79,12 @@ EVENTOS = [
     },
     {
         "id": "promo_jueves",
-        "titulo": "Jueves de Poesía",
+        "titulo": "Jueves de Promo: 2x1 🍹",
         "fecha": "Todos los Jueves",
         "hora": "18:00 a 24:00 hrs",
         "tipo": "solo_info",
-        "descripcion": "Todos los Jueves Poesía Clandestina. ¡Trae a tus amigos y disfruta de la poesía!",
-        "politicas": "<li>Ingreso por orden de llegada.</li>",
+        "descripcion": "Todos los Jueves tenemos 2x1 en combinados nacionales. ¡Trae a tus amigos y disfruta de la mejor previa de la semana!",
+        "politicas": "<li>Promoción válida hasta agotar stock. No acumulable con otras promociones. Ingreso por orden de llegada.</li>",
         "precio_min": "Solo Info"
     }
 ]
@@ -157,7 +129,7 @@ with st.sidebar:
     st.success("[+56 9 9677 7779](https://wa.me/56996777779)")
 
 # ==============================================================================
-# VISTA 1: HOME - EXPLORADOR DE EVENTOS (PÁGINA TIPO TICKETERA)
+# VISTA 1: HOME - EXPLORADOR DE EVENTOS
 # ==============================================================================
 if st.session_state.vista == "lista":
     try:
@@ -166,15 +138,15 @@ if st.session_state.vista == "lista":
         st.title("Club Repiola")
 
     st.subheader("Próximos Eventos")
-    st.write("Selecciona el evento que te interesa para ver detalles y reservar.")
+    st.write("Explora nuestra cartelera y presiona el botón para reservar tu mesa.")
     st.write("---")
 
-    # Alertas globales de la App
+    # Alertas globales
     st.warning("Cupos Limitados. Los fines de semana las mesas se llenan rápido.")
     st.info("**¡Hola! Te contamos:** Para aprovechar al máximo nuestro espacio, algunas de nuestras mesas se comparten con otros clientes. Tenlo en consideración al hacer tu reserva.")
     st.write("")
 
-    # Renderizado iterativo de las tarjetas-botones
+    # Renderizado seguro: Tarjeta HTML + Botón de Streamlit abajo
     for ev in EVENTOS:
         if ev['tipo'] == "reserva_gratis":
             badge_html = '<span class="badge-gratis">Reserva Gratis</span>'
@@ -183,17 +155,23 @@ if st.session_state.vista == "lista":
         else:
             badge_html = '<span class="badge-info">Sólo Información</span>'
 
-        # Estructura del contenido visual de la tarjeta
+        # Dibujamos la tarjeta visual de forma segura usando markdown
         html_tarjeta = f"""
+        <div class="event-card">
             <div class="card-title">{ev['titulo']}</div>
             <div class="card-date">📅 {ev['fecha']} | ⏰ {ev['hora']}</div>
             {badge_html} <span style="color:gray; font-size:12px; margin-left:10px;">Valor: {ev['precio_min']}</span>
+        </div>
         """
+        st.markdown(html_tarjeta, unsafe_allow_html=True)
         
-        # Al presionar la tarjeta completa, se gatilla la redirección
-        if st.button(html_tarjeta, key=ev['id']):
+        # Botón nativo de Streamlit justo debajo de la tarjeta para avanzar
+        texto_boton = "✨ Ver Información y Reservar Mesa" if ev['tipo'] != "solo_info" else "👀 Ver Más Información"
+        if st.button(texto_boton, key=ev['id'], use_container_width=True):
             ir_a_detalles(ev)
             st.rerun()
+            
+        st.write("") # Espacio de separación
 
 # ==============================================================================
 # VISTA 2: PÁGINA DE DETALLE Y FORMULARIO DE RESERVA
@@ -213,7 +191,7 @@ elif st.session_state.vista == "detalle":
     st.markdown(f"*{ev['descripcion']}*")
     st.write("")
 
-    # CONTROL DE RENDERIZADO SEGÚN TIPO DE EVENTO
+    # DISEÑO DE TARJETAS INTERNAS CON RESTRICCIONES Y POLÍTICAS PROCESADAS
     if ev['tipo'] == "reserva_pago":
         pago = ev['datos_pago']
         html_pago = f"""
