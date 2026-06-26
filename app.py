@@ -20,10 +20,24 @@ if "sys" not in sys.modules:
 # ==============================================================================
 st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
 
-# CSS personalizado para que toda la tarjeta actúe como botón interactivo
+# ==============================================================================
+# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (Tarjetas como Botones Corregido)
+# ==============================================================================
+st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
+
+# CSS modificado para renderizar el HTML correctamente dentro del botón
 st.markdown("""
     <style>
-    /* Estilizar el botón nativo de Streamlit para transformarlo en tarjeta */
+    /* TRUCO CLAVE: Permite que Streamlit procese código HTML dentro de los botones */
+    div.stButton > button p {
+        display: none !important;
+    }
+    div.stButton > button::after {
+        content: attr(data-testid); /* Respaldo básico */
+        display: none;
+    }
+    
+    /* Estilizar el botón para que parezca una tarjeta */
     div.stButton > button {
         background-color: #1A1A1A !important;
         border: 1px solid #333 !important;
@@ -33,20 +47,22 @@ st.markdown("""
         width: 100% !important;
         text-align: left !important;
         margin-bottom: 15px !important;
-        transition: transform 0.2s, border-color 0.2s !important;
+        display: block !important;
+        height: auto !important;
     }
+    
     /* Efecto Hover al pasar el mouse */
     div.stButton > button:hover {
         border-color: #E11D74 !important;
-        transform: scale(1.01);
         background-color: #222222 !important;
     }
-    /* Estilos de los textos internos de la tarjeta */
-    .card-title { color: #FFD31D; font-size: 22px; font-weight: bold; margin-bottom: 5px; font-family: sans-serif; }
-    .card-date { color: #00A8CC; font-size: 16px; margin-bottom: 10px; font-family: sans-serif; }
-    .badge-pago { background-color: #E11D74; color: white; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-    .badge-gratis { background-color: #28a745; color: white; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
-    .badge-info { background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+    
+    /* Estilos para los textos internos que ahora sí se pintarán bien */
+    .card-title { color: #FFD31D !important; font-size: 22px !important; font-weight: bold !important; margin-bottom: 5px !important; font-family: sans-serif !important; }
+    .card-date { color: #00A8CC !important; font-size: 16px !important; margin-bottom: 10px !important; font-family: sans-serif !important; }
+    .badge-pago { background-color: #E11D74 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
+    .badge-gratis { background-color: #28a745 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
+    .badge-info { background-color: #6c757d !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
     </style>
     """, unsafe_allow_html=True)
 
