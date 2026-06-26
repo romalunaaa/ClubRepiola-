@@ -20,7 +20,7 @@ if "sys" not in sys.modules:
 # ==============================================================================
 st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
 
-# CSS seguro para las tarjetas contenedoras (Markdown)
+# CSS seguro para las tarjetas contenedoras de la lista principal
 st.markdown("""
     <style>
     .event-card {
@@ -36,11 +36,20 @@ st.markdown("""
     .badge-pago { background-color: #E11D74 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
     .badge-gratis { background-color: #28a745 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
     .badge-info { background-color: #6c757d !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
+    
+    /* Caja de políticas personalizada sin interferencias de bloques de código */
+    .politicas-box {
+        background-color: #111111;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        margin-top: 10px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS
+# BASE DE DATOS DE EVENTOS (Actualizada a Markdown Nativo)
 # ==============================================================================
 EVENTOS = [
     {
@@ -51,19 +60,23 @@ EVENTOS = [
         "tipo": "reserva_gratis",
         "descripcion": "¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios. Ideal para celebrar cumpleaños en un ambiente ultra prendido.",
         "politicas": """
-            <li><b>Entrada Liberada:</b> No se cobra abono previo para este evento.</li>
-            <li><b>Tolerancia de espera:</b> La mesa se reserva <b>solo por 30 minutos</b> desde el inicio del evento (hasta las 22:30 hrs). Pasado ese tiempo, la mesa quedará libre para el público general.</li>
-            <li><b>Propina:</b> Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el karaoke en vivo.</li>
+1. **Entrada Liberada:** No se cobra abono previo para este evento.
+2. **Tolerancia de espera:** La mesa se reserva **solo por 30 minutos** desde el inicio del evento (hasta las 22:30 hrs). Pasado ese tiempo, la mesa quedará libre para el público general.
+3. **Propina:** Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el karaoke en vivo.
         """,
         "precio_min": "$0"
     },
     {
         "id": "tiktu_01",
-        "titulo": "Tiktuarawitaki en Vivo 🎶",
+        "titulo": "Tiktuarawitaki en vivo: poesía, música e ilustración en una experiencia única",
         "fecha": "Viernes 03 de Julio",
         "hora": "21:00 hrs",
         "tipo": "reserva_pago",
-        "descripcion": "Experiencia interdisciplinaria de dibujo en vivo, poesía y música inspirada en Gabriela Mistral y Manuel Rojas. Fondos para próxima gira en Buenos Aires.",
+        "descripcion": "Te invitamos a ser parte de una presentación especial de Tiktuarawitaki: Revitalizando la Herencia Cultural 🎨📖🎶
+
+Una experiencia interdisciplinaria que une dibujo en vivo, poesía y música, inspirada en la obra de Gabriela Mistral y Manuel Rojas, donde la palabra, la imagen y el sonido se encuentran para dar vida a una nueva mirada sobre nuestra memoria cultural.
+
+Esta presentación tiene además un propósito muy especial: reunir fondos para nuestra participación en una próxima presentación en Buenos Aires, llevando esta propuesta chilena a nuevos espacios de encuentro artístico y cultural. 🇨🇱✨",
         "datos_pago": {
             "banco": "BancoEstado (CuentaRUT)",
             "cuenta": "11.633.847-5",
@@ -71,20 +84,20 @@ EVENTOS = [
             "correo": "clubrepiola@gmail.com"
         },
         "politicas": """
-            <li><b>Abono Consumible:</b> El valor de la reserva es de <b>$10.000</b>, los cuales se descontarán en su totalidad de tu consumo total en el local.</li>
-            <li><b>Política de Cancelación:</b> Si avisas con un mínimo de <b>24 horas de anticipación</b>, se te devolverá el 100% del dinero. Si avisas tarde o no avisas, <b>no habrá devolución</b>.</li>
-            <li><b>Tolerancia de espera:</b> La mesa se guardará <b>solo por 30 minutos</b> iniciado el evento (hasta las 21:30 hrs). Pasado ese tiempo, la mesa se liberará para el público general.</li>
+1. **Abono Consumible:** El valor de la reserva es de **$10.000**, los cuales se descontarán en su totalidad de tu consumo total en el local.
+2. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del dinero. Si avisas tarde o no avisas, **no habrá devolución**.
+3. **Tolerancia de espera:** La mesa se guardará **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs). Pasado ese tiempo, la mesa se liberará para el público general.
         """,
-        "precio_min": "$10.000"
+        "precio_min": "🎟️ Adhesión voluntaria desde $3.000 (No considera el abono)"
     },
     {
         "id": "promo_jueves",
-        "titulo": "Jueves de Promo: 2x1 🍹",
+        "titulo": "Jueves de Poesía",
         "fecha": "Todos los Jueves",
         "hora": "18:00 a 24:00 hrs",
         "tipo": "solo_info",
-        "descripcion": "Todos los Jueves tenemos 2x1 en combinados nacionales. ¡Trae a tus amigos y disfruta de la mejor previa de la semana!",
-        "politicas": "<li>Promoción válida hasta agotar stock. No acumulable con otras promociones. Ingreso por orden de llegada.</li>",
+        "descripcion": "Todos los Jueves tenemos Poesía Clandestina. ¡Trae a tus amigos y disfruta de la mejor poesía!",
+        "politicas": "*Ingreso por orden de llegada.",
         "precio_min": "Solo Info"
     }
 ]
@@ -155,7 +168,6 @@ if st.session_state.vista == "lista":
         else:
             badge_html = '<span class="badge-info">Sólo Información</span>'
 
-        # Dibujamos la tarjeta visual de forma segura usando markdown
         html_tarjeta = f"""
         <div class="event-card">
             <div class="card-title">{ev['titulo']}</div>
@@ -165,13 +177,12 @@ if st.session_state.vista == "lista":
         """
         st.markdown(html_tarjeta, unsafe_allow_html=True)
         
-        # Botón nativo de Streamlit justo debajo de la tarjeta para avanzar
         texto_boton = "✨ Ver Información y Reservar Mesa" if ev['tipo'] != "solo_info" else "👀 Ver Más Información"
         if st.button(texto_boton, key=ev['id'], use_container_width=True):
             ir_a_detalles(ev)
             st.rerun()
             
-        st.write("") # Espacio de separación
+        st.write("")
 
 # ==============================================================================
 # VISTA 2: PÁGINA DE DETALLE Y FORMULARIO DE RESERVA
@@ -191,43 +202,40 @@ elif st.session_state.vista == "detalle":
     st.markdown(f"*{ev['descripcion']}*")
     st.write("")
 
-    # DISEÑO DE TARJETAS INTERNAS CON RESTRICCIONES Y POLÍTICAS PROCESADAS
+    # SECCIÓN DE DATOS Y POLÍTICAS (Renderizado nativo sin cajas de código ocultas)
     if ev['tipo'] == "reserva_pago":
         pago = ev['datos_pago']
-        html_pago = f"""
-        <div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74; box-shadow: 0px 4px 15px rgba(225, 29, 116, 0.2);">
-            <h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">Instrucciones de Reserva (CuentaRUT):</h4>
-            <p style="margin-bottom: 15px; color: #FFFFFF;">Realiza la transferencia para congelar tu espacio de forma inmediata con toda la onda:</p>
-            <ul style="color: #00A8CC; list-style-type: square; padding-left:20px;">
+        
+        # Contenedor de datos de pago
+        st.markdown(f"""
+        <div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">
+            <h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif;">Instrucciones de Reserva (CuentaRUT):</h4>
+            <p style="color: #FFFFFF; margin-bottom: 10px;">Realiza la transferencia para asegurar tu espacio de inmediato:</p>
+            <ul style="color: #00A8CC; padding-left: 20px;">
                 <li><b>Banco:</b> {pago['banco']}</li>
                 <li><b>Número de Cuenta:</b> {pago['cuenta']}</li>
                 <li><b>Monto del Abono:</b> {pago['monto']}</li>
                 <li><b>Correo:</b> {pago['correo']}</li>
             </ul>
-            <h4 style="color: #ff007f; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4>
-            <ol style="font-size: 14px; color: #FFFFFF; padding-left: 20px;">
-                {ev['politicas']}
-            </ol>
         </div>
-        """
-        st.markdown(html_pago, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+        
+        # Bloque de políticas en Markdown Limpio
+        st.markdown("### ⚠️ Detalles del Evento (Términos y Condiciones):")
+        st.markdown(ev['politicas'])
     
     elif ev['tipo'] == "reserva_gratis":
-        html_gratis = f"""
-        <div style="background-color: #162A16; padding: 20px; border-radius: 12px; border: 2px solid #28a745; box-shadow: 0px 4px 15px rgba(40, 167, 69, 0.2);">
-            <h4 style="color: #28a745; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">✅ Información de Acceso (Entrada Liberada):</h4>
-            <p style="margin-bottom: 15px; color: #FFFFFF;">Para este evento no necesitas realizar abonos previos de dinero:</p>
-            <ul style="color: #00A8CC; list-style-type: square; padding-left:20px;">
-                <li><b>Costo de Reserva:</b> Gratis / $0</li>
-                <li><b>Acceso:</b> Solo debes asegurar tu cupo completando el formulario de abajo.</li>
-            </ul>
-            <h4 style="color: #28a745; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4>
-            <ol style="font-size: 14px; color: #FFFFFF; padding-left: 20px;">
-                {ev['politicas']}
-            </ol>
+        # Contenedor de acceso gratuito
+        st.markdown("""
+        <div style="background-color: #162A16; padding: 20px; border-radius: 12px; border: 2px solid #28a745;">
+            <h4 style="color: #28a745; margin-top:0; font-family: sans-serif;">✅ Información de Acceso (Entrada Liberada):</h4>
+            <p style="color: #FFFFFF; margin-bottom: 0;">Para este evento no necesitas realizar abonos previos de dinero. Solo completa el formulario de abajo.</p>
         </div>
-        """
-        st.markdown(html_gratis, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+        
+        # Bloque de políticas en Markdown Limpio
+        st.markdown("### ⚠️ Detalles del Evento (Términos y Condiciones):")
+        st.markdown(ev['politicas'])
 
     st.write("")
 
