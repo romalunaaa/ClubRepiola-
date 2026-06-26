@@ -5,249 +5,228 @@ import builtins
 import importlib
 import os
 import sys
+from datetime import datetime
+import pandas as pd
+import requests
+import streamlit as st
 
 if not hasattr(builtins, "sys"):
     builtins.sys = sys
 if "sys" not in sys.modules:
     sys.modules["sys"] = sys
 
-from datetime import datetime
-import pandas as pd
-import requests
-import streamlit as st
+# ==============================================================================
+# CONFIGURACIÓN DE PÁGINA
+# ==============================================================================
+st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
+
+# Custom CSS para que las tarjetas se vean geniales
+st.markdown("""
+    <style>
+    .event-card {
+        background-color: #1A1A1A;
+        border: 1px solid #333;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 5px solid #E11D74;
+    }
+    .event-title { color: #FFD31D; font-size: 22px; font-weight: bold; margin-bottom: 5px; }
+    .event-date { color: #00A8CC; font-size: 16px; margin-bottom: 10px; }
+    .badge-pago { background-color: #E11D74; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; }
+    .badge-gratis { background-color: #28a745; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; }
+    .badge-info { background-color: #6c757d; color: white; padding: 2px 8px; border-radius: 5px; font-size: 12px; }
+    </style>
+    """, unsafe_allow_html=True)
 
 # ==============================================================================
-# CONFIGURACIÓN DE PÁGINA DE STREAMLIT
+# BASE DE DATOS DE EVENTOS (Aquí agregas o quitas eventos fácilmente)
 # ==============================================================================
-st.set_page_config(
-    page_title="Club Repiola - Reservas", layout="centered"
-)
-
-# ==============================================================================
-# CONTROLLER / ESTADO DE LA APP (Para manejo dinámico de eventos)
-# ==============================================================================
-OPCIONES_EVENTOS = [
-    "Sábado de Karaoke (22:00 hrs)",
-    "Viernes 03 de julio Tiktuarawitaki en vivo (21:00 hrs)",
+# Tipos: 'reserva_gratis', 'reserva_pago', 'solo_info'
+EVENTOS = [
+    {
+        "id": "karaoke_01",
+        "titulo": "Sábado de Karaoke 🎤",
+        "fecha": "Todos los Sábados",
+        "hora": "22:00 hrs",
+        "tipo": "reserva_gratis",
+        "descripcion": "¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios. Ideal para celebrar cumpleaños.",
+        "politicas": "Entrada Liberada. Se sugiere propina para la animadora.",
+        "precio_min": "$0"
+    },
+    {
+        "id": "tiktu_01",
+        "titulo": "Tiktuarawitaki en Vivo 🎶",
+        "fecha": "Viernes 03 de Julio",
+        "hora": "21:00 hrs",
+        "tipo": "reserva_pago",
+        "descripcion": "Experiencia interdisciplinaria de dibujo en vivo, poesía y música. Fondos para gira en Buenos Aires.",
+        "datos_pago": {
+            "banco": "BancoEstado (CuentaRUT)",
+            "cuenta": "11.633.847-5",
+            "monto": "Desde $3.000",
+            "correo": "clubrepiola@gmail.com"
+        },
+        "politicas": "Adhesión voluntaria va directo a los artistas. Validamos con tu RUT.",
+        "precio_min": "$3.000"
+    },
+    {
+        "id": "promo_jueves",
+        "titulo": "Jueves de Promo: 2x1 🍹",
+        "fecha": "Todos los Jueves",
+        "hora": "18:00 a 24:00 hrs",
+        "tipo": "solo_info",
+        "descripcion": "Todos los Jueves tenemos 2x1 en combinados nacionales. ¡No requiere reserva, solo llega temprano!",
+        "politicas": "Promoción válida hasta agotar stock. No acumulable.",
+        "precio_min": "Solo Info"
+    }
 ]
 
-if "evento_actual" not in st.session_state:
-    st.session_state.evento_actual = OPCIONES_EVENTOS[0]
+# ==============================================================================
+# MANEJO DE ESTADO (Navegación)
+# ==============================================================================
+if "vista" not in st.session_state:
+    st.session_state.vista = "lista"
+if "evento_sel" not in st.session_state:
+    st.session_state.evento_sel = None
+
+def ir_a_detalles(evento):
+    st.session_state.evento_sel = evento
+    st.session_state.vista = "detalle"
+
+def volver_a_lista():
+    st.session_state.vista = "lista"
+    st.session_state.evento_sel = None
 
 # ==============================================================================
-# 1. BARRA LATERAL (BRANDBOARD E INFORMACIÓN DE LA PYME)
+# SIDEBAR (Común para ambas vistas)
 # ==============================================================================
 with st.sidebar:
     try:
         st.image("logorepiola.jpg", use_container_width=True)
     except:
-        st.subheader("Club Repiola")
-
-    st.markdown("---")
+        st.header("Club Repiola")
     
-    # Horario con icono predeterminado
+    st.markdown("---")
     st.markdown("### 🕒 Horario Otoño")
-    st.write("• **Jueves:** 18:00 a 24:00 hrs")
-    st.write("• **Viernes y Sábado:** 18:00 a 03:00 hrs")
-    st.write("• **Domingo:** Solo Eventos reservados.")
-
+    st.write("• **Jueves:** 18:00 a 00:00\n• **Viernes/Sábado:** 18:00 a 03:00")
     st.markdown("---")
-    
-    # Ubicación con icono predeterminado
     st.markdown("### 📍 Ubicación")
-    st.caption("Vicuña Rozas 5032, Quinta Normal, Santiago, Chile")
-
+    st.caption("Vicuña Rozas 5032, Quinta Normal")
     st.markdown("---")
+    st.success("[💬 WhatsApp Ayuda](https://wa.me/56996777779)")
+
+# ==============================================================================
+# VISTA 1: LISTA DE EVENTOS
+# ==============================================================================
+if st.session_state.vista == "lista":
+    try:
+        st.image("titulo_repiola.png", use_container_width=True)
+    except:
+        st.title("Club Repiola")
+
+    st.subheader("Próximos Eventos")
+    st.write("Haz clic en un evento para ver detalles y reservar.")
+
+    for ev in EVENTOS:
+        # Definir etiqueta según tipo
+        if ev['tipo'] == "reserva_gratis":
+            badge = '<span class="badge-gratis">Reserva Gratis</span>'
+        elif ev['tipo'] == "reserva_pago":
+            badge = '<span class="badge-pago">Requiere Adhesión</span>'
+        else:
+            badge = '<span class="badge-info">Sólo Información</span>'
+
+        # Render de la tarjeta HTML
+        st.markdown(f"""
+            <div class="event-card">
+                <div class="event-title">{ev['titulo']}</div>
+                <div class="event-date">📅 {ev['fecha']} | ⏰ {ev['hora']}</div>
+                {badge} <span style="color:gray; font-size:12px;">Min: {ev['precio_min']}</span>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # Botón de Streamlit para acción
+        texto_boton = "Ver Información y Reservar" if ev['tipo'] != "solo_info" else "Ver Más Información"
+        if st.button(texto_boton, key=ev['id'], use_container_width=True):
+            ir_a_detalles(ev)
+            st.rerun()
+
+# ==============================================================================
+# VISTA 2: DETALLE DEL EVENTO Y FORMULARIO
+# ==============================================================================
+elif st.session_state.vista == "detalle":
+    ev = st.session_state.evento_sel
     
-    # WhatsApp con icono predeterminado
-    st.markdown("### 📞 WhatsApp")
-    st.success("[+56 9 9677 7779](https://wa.me/56996777779)")
+    if st.button("⬅️ Volver a todos los eventos"):
+        volver_a_lista()
+        st.rerun()
 
-
-# ==============================================================================
-# 2. CUERPO PRINCIPAL DE LA APP
-# ==============================================================================
-try:
-    # Asegúrate de guardar tu imagen de título con este nombre en la misma carpeta
-    st.image("titulo_repiola.png", use_container_width=True)
-except:
-    # Respaldo en texto plano si la imagen no se encuentra
-    st.title("Club Repiola")
-
-st.subheader("Reserva tu Mesa")
-st.markdown(
-    "Asegura tu espacio completando el formulario. Los cupos son limitados."
-)
-st.write("---")
-
-# Secciones de alertas limpias, sin iconos
-st.info("**Dato Repiola:** Las reservas se mantienen hasta 30 minutos después de la hora acordada.")
-st.warning("Cupos Limitados. Viernes y Sábados los cupos se llenan rápido.")
-st.info("**¡Hola! Te contamos:** Para aprovechar al máximo nuestro espacio, algunas de nuestras mesas se comparten con otros clientes. Tenlo en consideración al hacer tu reserva.")
-
-st.write("")
-
-# LÓGICA DE DATOS DINÁMICOS PARA LA TARJETA DE TRANSFERENCIA (Sin espacios al inicio)
-evento_leyendo = st.session_state.evento_actual
-
-if evento_leyendo == "Sábado de Karaoke (22:00 hrs)":
-    titulo_tarjeta = "Información de Acceso (Entrada Liberada):"
-    bajada_tarjeta = "Para este evento no necesitas realizar abonos previos de dinero:"
-    cuerpo_tarjeta = '<li><b style="color: #FFFFFF;">Costo de Reserva:</b> Gratis / $0</li><li><b style="color: #FFFFFF;">Acceso:</b> Solo debes asegurar tu cupo completando el formulario de abajo.</li>'
-    politicas_tarjeta = '<li><b>¡Entrada Liberada!</b> No se cobra abono de mesa previa.</li><li><b>Apoya el arte local:</b> Te invitamos a dejarle una propina con toda la buena vibra a la animadora que estará prendiendo el karaoke en vivo.</li>'
-else:
-    # Caso: Viernes 03 de julio Tiktuarawitaki en vivo (21:00 hrs)
-    titulo_tarjeta = "Instrucciones de Adhesión (CuentaRUT):"
-    bajada_tarjeta = "Realiza la transferencia para congelar tu espacio de forma inmediata con toda la onda:"
-    cuerpo_tarjeta = '<li><b style="color: #FFFFFF;">Banco:</b> BancoEstado (CuentaRUT)</li><li><b style="color: #FFFFFF;">Número de Cuenta:</b> 11.633.847-5</li><li><b style="color: #FFFFFF;">Monto Adhesión:</b> Voluntaria desde $3.000</li><li><b style="color: #FFFFFF;">Correo:</b> clubrepiola@gmail.com</li>'
-    politicas_tarjeta = '<li><b>Propósito Especial:</b> Todo lo recaudado por concepto de adhesión voluntaria va directamente a financiar la presentación de este proyecto artístico✨</li><li><b>Validación:</b> Es importante ingresar el RUT del titular de la transferencia para validar correctamente tu aporte.</li>'
-
-# Tarjeta de transferencia armada en una sola línea de HTML para evitar que Streamlit rompa el diseño
-html_tarjeta = f"""<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74; box-shadow: 0px 4px 15px rgba(225, 29, 116, 0.2);"><h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">{titulo_tarjeta}</h4><p style="margin-bottom: 15px; color: #FFFFFF;">{bajada_tarjeta}</p><ul style="color: #00A8CC; list-style-type: square;">{cuerpo_tarjeta}</ul><h4 style="color: #ff007f; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4><ol style="font-size: 14px; color: #FFFFFF;">{politicas_tarjeta}</ol></div>"""
-
-st.markdown(html_tarjeta, unsafe_allow_html=True)
-
-st.write("")
-
-# ==============================================================================
-# 3. FORMULARIO DE RESERVA
-# ==============================================================================
-# Selector fuera del form para refrescar la tarjeta superior al hacer click
-evento_seleccionado = st.selectbox(
-    "Selecciona el Evento / Fecha",
-    OPCIONES_EVENTOS,
-    key="selectbox_evento"
-)
-
-# Sincronizamos cambios inmediatos
-if st.session_state.selectbox_evento != st.session_state.evento_actual:
-    st.session_state.evento_actual = st.session_state.selectbox_evento
-    st.rerun()
-
-with st.form("formulario_reserva"):
-    st.subheader("Completa tus datos")
-
-    # 🚨 AVISO DE PAGO INMEDIATO (Para que lo vean apenas seleccionen el evento)
-    if evento_seleccionado == "Sábado de Karaoke (22:00 hrs)":
-        st.success("✅ **Este evento es de Entrada Liberada ($0).** Solo dejas propina voluntaria a la animadora en el local.")
-    else:
-        st.error("💳 **Este evento requiere Adhesión Voluntaria (Desde $3.000).** Recuerda revisar los datos de transferencia en la tarjeta de arriba.")
-
-    st.write("")
-
-    # 📝 DESCRIPCIONES DINÁMICAS SEGÚN EL EVENTO SELECCIONADO
-    if evento_seleccionado == "Sábado de Karaoke (22:00 hrs)":
-        st.markdown("*🎤 **Sobre este evento:** ¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios. Ideal para venir con amigos del trabajo o celebrar cumpleaños en un ambiente ultra prendido.*")
-    elif evento_seleccionado == "Viernes 03 de julio Tiktuarawitaki en vivo (21:00 hrs)":
-        st.markdown("""*🎧 **Te invitamos a ser parte de una presentación especial de Tiktuarawitaki: Revitalizando la Herencia Cultural 🎨📖🎶**
-
-Una experiencia interdisciplinaria que une dibujo en vivo, poesía y música, inspirada en la obra de Gabriela Mistral y Manuel Rojas, donde la palabra, la imagen y el sonido se encuentran para dar vida a una nueva mirada sobre nuestra memoria cultural.
-
-Esta presentación tiene además un propósito muy especial: reunir fondos para nuestra participación en una próxima presentación en Buenos Aires, llevando esta propuesta chilena a nuevos espacios de encuentro artístico y cultural. 🇨🇱✨*""")
+    st.title(ev['titulo'])
+    st.info(f"📅 **Fecha:** {ev['fecha']} | ⏰ **Hora:** {ev['hora']}")
     
-    st.write("")
+    st.markdown(f"### Sobre el evento")
+    st.write(ev['descripcion'])
 
-    mesa_seleccionada = st.selectbox(
-        "Selecciona tu Mesa preferida",
-        ["Mesa para 1", "Mesa para 2", "Mesa para 3", "Mesa para 4", "Terraza"],
-    )
+    # Si el evento es de pago, mostrar tarjeta de transferencia
+    if ev['tipo'] == "reserva_pago":
+        pago = ev['datos_pago']
+        html_pago = f"""
+        <div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">
+            <h4 style="color: #FFD31D; margin-top:0;">Datos de Transferencia</h4>
+            <ul style="color: #00A8CC;">
+                <li><b>Banco:</b> {pago['banco']}</li>
+                <li><b>Cuenta:</b> {pago['cuenta']}</li>
+                <li><b>Monto:</b> {pago['monto']}</li>
+                <li><b>Correo:</b> {pago['correo']}</li>
+            </ul>
+            <p style="font-size:12px; color:white;">⚠️ <i>{ev['politicas']}</i></p>
+        </div>
+        """
+        st.markdown(html_pago, unsafe_allow_html=True)
+    
+    elif ev['tipo'] == "reserva_gratis":
+        st.success(f"✅ **Entrada Liberada:** {ev['politicas']}")
 
-    nombre = st.text_input("Nombre Completo de quien asiste")
-    rut = st.text_input("RUT del Titular (Para validar transferencia)")
-
-    boton_confirmar = st.form_submit_button("🚀 Enviar y Congelar Mesa")
-
-
-# ==============================================================================
-# 4. LÓGICA DE ENVÍO INVISIBLE + REDIRECCIÓN A WHATSAPP
-# ==============================================================================
-if boton_confirmar:
-    if nombre and rut:
-        try:
-            url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
-
-            datos_reserva_forms = {
-                "entry.2041447904": evento_seleccionado,
-                "entry.44496726": mesa_seleccionada,
-                "entry.970850673": nombre,
-                "entry.2047753483": rut,
-            }
-
-            # Enviar textos a Google Forms de manera invisible
-            respuesta = requests.post(url_formulario, data=datos_reserva_forms)
-
-            if respuesta.status_code == 200:
-                # Respaldo Local de seguridad en .csv
-                datos_nueva_reserva = {
-                    "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                    "Evento": evento_seleccionado,
-                    "Mesa": mesa_seleccionada,
-                    "Nombre": nombre,
-                    "RUT": rut,
-                    "Estado": "Pendiente",
-                }
-                nueva_reserva_df = pd.DataFrame([datos_nueva_reserva])
-                nueva_reserva_df.to_csv(
-                    "reservas_local.csv",
-                    mode="a",
-                    header=not os.path.exists("reservas_local.csv"),
-                    index=False,
-                )
-
-                st.balloons()
-                st.success("🎉 ¡Datos registrados con éxito!")
-
-                # Ajuste del texto final de WhatsApp según el tipo de evento
-                if evento_seleccionado == "Sábado de Karaoke (22:00 hrs)":
-                    remate_wa = "Acepto las políticas de reserva. ¡Nos vemos allá para cantar con toda la energía! 🎤🔥"
+    # Formulario (Solo si permite reserva)
+    if ev['tipo'] in ["reserva_gratis", "reserva_pago"]:
+        st.write("---")
+        with st.form("form_reserva"):
+            st.subheader("Reserva tu lugar")
+            mesa = st.selectbox("Mesa para:", ["Mesa 1-2 pers", "Mesa 3-4 pers", "Terraza (Fumadores)"])
+            nombre = st.text_input("Nombre Completo")
+            rut = st.text_input("RUT (Para validar)")
+            
+            submit = st.form_submit_button("🚀 Confirmar Intención de Reserva")
+            
+            if submit:
+                if nombre and rut:
+                    # Lógica de Google Forms (Reutilizada de tu código original)
+                    url_forms = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
+                    payload = {
+                        "entry.2041447904": ev['titulo'],
+                        "entry.44496726": mesa,
+                        "entry.970850673": nombre,
+                        "entry.2047753483": rut
+                    }
+                    try:
+                        requests.post(url_forms, data=payload)
+                        st.balloons()
+                        
+                        # Preparar WhatsApp
+                        txt_wa = f"¡Hola! Reservé para *{ev['titulo']}*.\n👤 Nombre: {nombre}\n🆔 RUT: {rut}\n🪑 Mesa: {mesa}"
+                        if ev['tipo'] == "reserva_pago":
+                            txt_wa += "\n👇 Aquí adjunto mi comprobante."
+                        
+                        url_wa = f"https://wa.me/56996777779?text={requests.utils.quote(txt_wa)}"
+                        
+                        st.success("¡Datos enviados!")
+                        st.link_button("🟢 Finalizar en WhatsApp", url_wa, type="primary", use_container_width=True)
+                    except:
+                        st.error("Error al conectar con el servidor.")
                 else:
-                    remate_wa = "Acepto las políticas de reserva. Aquí adjunto el comprobante de transferencia por la adhesión voluntaria. 👇"
-
-                # Generar el mensaje automático para WhatsApp
-                mensaje_wa = (
-                    f"¡Hola! 🍹 Acabo de registrar una reserva en la web.\n\n"
-                    f"👤 *Nombre:* {nombre}\n"
-                    f"🆔 *RUT:* {rut}\n"
-                    f"📅 *Evento:* {evento_seleccionado}\n"
-                    f"🪑 *Mesa:* {mesa_seleccionada}\n\n"
-                    f"{remate_wa}"
-                )
-
-                mensaje_codificado = requests.utils.quote(mensaje_wa)
-                url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
-
-                # Cuadro de advertencia claro según el evento
-                if evento_seleccionado == "Sábado de Karaoke (22:00 hrs)":
-                    texto_instruccion_wa = "Para validar y confirmar tu mesa de forma definitiva, presiona el botón verde de abajo para avisarnos por WhatsApp."
-                else:
-                    texto_instruccion_wa = "Para validar tu abono y confirmar tu mesa, presiona el botón verde de abajo para abrir WhatsApp y <b>enviarnos la captura del comprobante</b>."
-
-                st.markdown(
-                    f"""
-                <div style="background-color: #ff007f1a; padding: 15px; border-radius: 8px; border: 1px dashed #ff007f; margin-bottom: 15px;">
-                    <p style="margin: 0; color: #ff007f; font-weight: bold; text-align: center;">
-                        ⚠️ ¡ÚLTIMO PASO OBLIGATORIO! ⚠️
-                    </p>
-                    <p style="margin: 5px 0 0 0; font-size: 14px; text-align: center;">
-                        {texto_instruccion_wa}
-                    </p>
-                </div>
-                """,
-                    unsafe_allow_html=True,
-                )
-
-                # Botón llamativo para saltar a WhatsApp
-                st.link_button(
-                    "🟢 Notificar Reserva por WhatsApp",
-                    url_whatsapp,
-                    type="primary",
-                    use_container_width=True,
-                )
-
-            else:
-                st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
-
-        except Exception as e:
-            st.error(f"Error al procesar la reserva: {e}")
+                    st.warning("Completa los campos obligatorios.")
     else:
-        st.warning("Por favor, rellena tu Nombre y tu RUT antes de enviar la solicitud.")
+        # Vista para eventos 'solo_info'
+        st.warning("📍 Este evento no requiere reserva previa. ¡Te esperamos por orden de llegada!")
+        st.markdown(f"**Condiciones:** {ev['politicas']}")
