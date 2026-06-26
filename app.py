@@ -185,10 +185,143 @@ if st.session_state.vista == "lista":
 elif st.session_state.vista == "detalle":
     ev = st.session_state.evento_sel
     
-    if st.button("VOLVER A LA LISTA DE EVENTOS"):
+    if st.button("⬅️ Volver a la lista de eventos"):
         volver_a_lista()
         st.rerun()
 
     st.write("")
     st.title(ev['titulo'])
-    st.info(f"📅 **Fecha:** {ev['fecha']} | ⏰ **Hora:**
+    st.info(f"📅 **Fecha:** {ev['fecha']} | ⏰ **Hora:** {ev['hora']}")
+    
+    st.markdown("### Sobre este evento")
+    st.markdown(f"*{ev['descripcion']}*")
+    st.write("")
+
+    # CONTROL DE RENDERIZADO SEGÚN TIPO DE EVENTO
+    if ev['tipo'] == "reserva_pago":
+        pago = ev['datos_pago']
+        html_pago = f"""
+        <div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74; box-shadow: 0px 4px 15px rgba(225, 29, 116, 0.2);">
+            <h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">Instrucciones de Reserva (CuentaRUT):</h4>
+            <p style="margin-bottom: 15px; color: #FFFFFF;">Realiza la transferencia para congelar tu espacio de forma inmediata con toda la onda:</p>
+            <ul style="color: #00A8CC; list-style-type: square; padding-left:20px;">
+                <li><b>Banco:</b> {pago['banco']}</li>
+                <li><b>Número de Cuenta:</b> {pago['cuenta']}</li>
+                <li><b>Monto del Abono:</b> {pago['monto']}</li>
+                <li><b>Correo:</b> {pago['correo']}</li>
+            </ul>
+            <h4 style="color: #ff007f; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4>
+            <ol style="font-size: 14px; color: #FFFFFF; padding-left: 20px;">
+                {ev['politicas']}
+            </ol>
+        </div>
+        """
+        st.markdown(html_pago, unsafe_allow_html=True)
+    
+    elif ev['tipo'] == "reserva_gratis":
+        html_gratis = f"""
+        <div style="background-color: #162A16; padding: 20px; border-radius: 12px; border: 2px solid #28a745; box-shadow: 0px 4px 15px rgba(40, 167, 69, 0.2);">
+            <h4 style="color: #28a745; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">✅ Información de Acceso (Entrada Liberada):</h4>
+            <p style="margin-bottom: 15px; color: #FFFFFF;">Para este evento no necesitas realizar abonos previos de dinero:</p>
+            <ul style="color: #00A8CC; list-style-type: square; padding-left:20px;">
+                <li><b>Costo de Reserva:</b> Gratis / $0</li>
+                <li><b>Acceso:</b> Solo debes asegurar tu cupo completando el formulario de abajo.</li>
+            </ul>
+            <h4 style="color: #28a745; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4>
+            <ol style="font-size: 14px; color: #FFFFFF; padding-left: 20px;">
+                {ev['politicas']}
+            </ol>
+        </div>
+        """
+        st.markdown(html_gratis, unsafe_allow_html=True)
+
+    st.write("")
+
+    # FORMULARIO DE ASIGNACIÓN
+    if ev['tipo'] in ["reserva_gratis", "reserva_pago"]:
+        with st.form("formulario_reserva_dinamico"):
+            st.subheader("Completa tus datos para la mesa")
+            
+            if ev['tipo'] == "reserva_gratis":
+                st.success("✅ **Este evento es de Entrada Liberada ($0).**")
+            else:
+                st.error("💳 **Este evento requiere Abono Reembolsable ($10.000).**")
+
+            mesa_seleccionada = st.selectbox(
+                "Selecciona tu Mesa preferida",
+                ["Mesa para 1", "Mesa para 2", "Mesa para 3", "Mesa para 4", "Terraza"],
+            )
+
+            nombre = st.text_input("Nombre Completo de quien asiste")
+            rut = st.text_input("RUT del Titular (Para validar transferencia/asistencia)")
+
+            boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio")
+
+        if boton_confirmar:
+            if nombre and rut:
+                try:
+                    url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
+                    datos_reserva_forms = {
+                        "entry.2041447904": ev['titulo'],
+                        "entry.44496726": mesa_seleccionada,
+                        "entry.970850673": nombre,
+                        "entry.2047753483": rut,
+                    }
+
+                    respuesta = requests.post(url_formulario, data=datos_reserva_forms)
+
+                    if respuesta.status_code == 200:
+                        datos_nueva_reserva = {
+                            "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                            "Evento": ev['titulo'],
+                            "Mesa": mesa_seleccionada,
+                            "Nombre": nombre,
+                            "RUT": rut,
+                            "Estado": "Pendiente",
+                        }
+                        nueva_reserva_df = pd.DataFrame([datos_nueva_reserva])
+                        nueva_reserva_df.to_csv(
+                            "reservas_local.csv",
+                            mode="a",
+                            header=not os.path.exists("reservas_local.csv"),
+                            index=False,
+                        )
+
+                        st.balloons()
+                        st.success("🎉 ¡Pre-reserva registrada con éxito!")
+
+                        if ev['tipo'] == "reserva_gratis":
+                            remate_wa = "Acepto los términos y la tolerancia de 30 minutos de espera. ¡Nos vemos allá! 🎤"
+                            texto_instruccion_wa = "Para validar y guardar tu mesa de forma definitiva, presiona el botón verde de abajo para notificarnos vía WhatsApp."
+                        else:
+                            remate_wa = "Acepto los términos de abono consumible y políticas de cancelación 24h. Adjunto comprobante de transferencia de $10.000. 👇"
+                            texto_instruccion_wa = "Para validar tu abono consumible, presiona el botón de abajo para abrir WhatsApp y <b>enviarnos la captura del comprobante</b>."
+
+                        mensaje_wa = (
+                            f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
+                            f"👤 *Nombre:* {nombre}\n"
+                            f"🆔 *RUT:* {rut}\n"
+                            f"📅 *Evento:* {ev['titulo']}\n"
+                            f"🪑 *Mesa:* {mesa_seleccionada}\n\n"
+                            f"{remate_wa}"
+                        )
+
+                        mensaje_codificado = requests.utils.quote(mensaje_wa)
+                        url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
+
+                        st.markdown(f"""
+                            <div style="background-color: #ff007f1a; padding: 15px; border-radius: 8px; border: 1px dashed #ff007f; margin-bottom: 15px;">
+                                <p style="margin: 0; color: #ff007f; font-weight: bold; text-align: center;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO! ⚠️</p>
+                                <p style="margin: 5px 0 0 0; font-size: 14px; text-align: center;">{texto_instruccion_wa}</p>
+                            </div>
+                        """, unsafe_allow_html=True)
+
+                        st.link_button("🟢 Notificar Reserva por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
+                    else:
+                        st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
+                except Exception as e:
+                    st.error(f"Error al procesar la reserva: {e}")
+            else:
+                st.warning("Por favor, rellena tu Nombre y tu RUT antes de enviar la solicitud.")
+    else:
+        st.warning("📍 Este evento no requiere reserva previa de mesas. ¡Te esperamos por orden de llegada al local!")
