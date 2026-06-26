@@ -83,57 +83,29 @@ st.write("---")
 # Secciones de alertas limpias, sin iconos
 st.info("**Dato Repiola:** Las reservas se mantienen hasta 30 minutos después de la hora acordada.")
 st.warning("Cupos Limitados. Viernes y Sábados los cupos se llenan rápido.")
-# Nueva alerta usando st.info para que mantenga el estilo visual de los consejos anteriores
 st.info("**¡Hola! Te contamos:** Para aprovechar al máximo nuestro espacio, algunas de nuestras mesas se comparten con otros clientes. Tenlo en consideración al hacer tu reserva.")
 
 st.write("")
 
-# LÓGICA DE DATOS DINÁMICOS PARA LA TARJETA DE TRANSFERENCIA
+# LÓGICA DE DATOS DINÁMICOS PARA LA TARJETA DE TRANSFERENCIA (Sin espacios al inicio)
 evento_leyendo = st.session_state.evento_actual
 
 if evento_leyendo == "Sábado de Karaoke (22:00 hrs)":
     titulo_tarjeta = "Información de Acceso (Entrada Liberada):"
     bajada_tarjeta = "Para este evento no necesitas realizar abonos previos de dinero:"
-    cuerpo_tarjeta = """
-        <li><b style="color: #FFFFFF;">Costo de Reserva:</b> Gratis / $0</li>
-        <li><b style="color: #FFFFFF;">Acceso:</b> Solo debes asegurar tu cupo completando el formulario de abajo.</li>
-    """
-    politicas_tarjeta = """
-        <li><b>¡Entrada Liberada!</b> No se cobra abono de mesa previa.</li>
-        <li><b>Apoya el arte local:</b> Te invitamos a dejarle una propina con toda la buena vibra a la animadora que estará prendiendo el karaoke en vivo.</li>
-    """
+    cuerpo_tarjeta = '<li><b style="color: #FFFFFF;">Costo de Reserva:</b> Gratis / $0</li><li><b style="color: #FFFFFF;">Acceso:</b> Solo debes asegurar tu cupo completando el formulario de abajo.</li>'
+    politicas_tarjeta = '<li><b>¡Entrada Liberada!</b> No se cobra abono de mesa previa.</li><li><b>Apoya el arte local:</b> Te invitamos a dejarle una propina con toda la buena vibra a la animadora que estará prendiendo el karaoke en vivo.</li>'
 else:
     # Caso: Viernes 03 de julio Tiktuarawitaki en vivo (21:00 hrs)
     titulo_tarjeta = "Instrucciones de Adhesión (CuentaRUT):"
     bajada_tarjeta = "Realiza la transferencia para congelar tu espacio de forma inmediata con toda la onda:"
-    cuerpo_tarjeta = """
-        <li><b style="color: #FFFFFF;">Banco:</b> BancoEstado (CuentaRUT)</li>
-        <li><b style="color: #FFFFFF;">Número de Cuenta:</b> 11.633.847-5</li>
-        <li><b style="color: #FFFFFF;">Monto Adhesión:</b> Voluntaria desde $3.000</li>
-        <li><b style="color: #FFFFFF;">Correo:</b> clubrepiola@gmail.com</li>
-    """
-    politicas_tarjeta = """
-        <li><b>Propósito Especial:</b> Todo lo recaudado por concepto de adhesión voluntaria va directamente a financiar la presentación de este proyecto artístico en Buenos Aires, Argentina. 🇨🇱✨</li>
-        <li><b>Validación:</b> Es importante ingresar el RUT del titular de la transferencia para validar correctamente tu aporte.</li>
-    """
+    cuerpo_tarjeta = '<li><b style="color: #FFFFFF;">Banco:</b> BancoEstado (CuentaRUT)</li><li><b style="color: #FFFFFF;">Número de Cuenta:</b> 11.633.847-5</li><li><b style="color: #FFFFFF;">Monto Adhesión:</b> Voluntaria desde $3.000</li><li><b style="color: #FFFFFF;">Correo:</b> clubrepiola@gmail.com</li>'
+    politicas_tarjeta = '<li><b>Propósito Especial:</b> Todo lo recaudado por concepto de adhesión voluntaria va directamente a financiar la presentación de este proyecto artístico en Buenos Aires, Argentina. 🇨🇱✨</li><li><b>Validación:</b> Es importante ingresar el RUT del titular de la transferencia para validar correctamente tu aporte.</li>'
 
-# Tarjeta de transferencia limpia, sin imágenes superiores ni iconos internos (DINÁMICA)
-st.markdown(
-    f"""
-<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74; box-shadow: 0px 4px 15px rgba(225, 29, 116, 0.2);">
-    <h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">{titulo_tarjeta}</h4>
-    <p style="margin-bottom: 15px; color: #FFFFFF;">{bajada_tarjeta}</p>
-    <ul style="color: #00A8CC; list-style-type: square;">
-        {cuerpo_tarjeta}
-    </ul>
-    <h4 style="color: #ff007f; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4>
-    <ol style="font-size: 14px; color: #FFFFFF;">
-        {politicas_tarjeta}
-    </ol>
-</div>
-""",
-    unsafe_allow_html=True,
-)
+# Tarjeta de transferencia armada en una sola línea de HTML para evitar que Streamlit rompa el diseño
+html_tarjeta = f"""<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74; box-shadow: 0px 4px 15px rgba(225, 29, 116, 0.2);"><h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif; letter-spacing: 1px;">{titulo_tarjeta}</h4><p style="margin-bottom: 15px; color: #FFFFFF;">{bajada_tarjeta}</p><ul style="color: #00A8CC; list-style-type: square;">{cuerpo_tarjeta}</ul><h4 style="color: #ff007f; margin-top:15px; margin-bottom:5px;">⚠️ Detalles del Evento (Términos y Condiciones):</h4><ol style="font-size: 14px; color: #FFFFFF;">{politicas_tarjeta}</ol></div>"""
+
+st.markdown(html_tarjeta, unsafe_allow_html=True)
 
 st.write("")
 
