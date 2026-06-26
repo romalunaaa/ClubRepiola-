@@ -40,7 +40,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS (Actualizada a Markdown Nativo y Comillas Triples)
+# BASE DE DATOS DE EVENTOS (Markdown Nativo)
 # ==============================================================================
 EVENTOS = [
     {
@@ -71,7 +71,7 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
         "datos_pago": {
             "banco": "BancoEstado (CuentaRUT)",
             "cuenta": "11.633.847-5",
-            "monto": "$10.000 (Abono transferido)",
+            "monto": "$10.000",
             "correo": "clubrepiola@gmail.com"
         },
         "politicas": """
@@ -145,12 +145,10 @@ if st.session_state.vista == "lista":
     st.write("Explora nuestra cartelera y presiona el botón para reservar tu mesa.")
     st.write("---")
 
-    # Alertas globales
     st.warning("Cupos Limitados. Los fines de semana las mesas se llenan rápido.")
     st.info("**¡Hola! Te contamos:** Para aprovechar al máximo nuestro espacio, algunas de nuestras mesas se comparten con otros clientes. Tenlo en consideración al hacer tu reserva.")
     st.write("")
 
-    # Renderizado seguro: Tarjeta HTML + Botón de Streamlit abajo
     for ev in EVENTOS:
         if ev['tipo'] == "reserva_gratis":
             badge_html = '<span class="badge-gratis">Reserva Gratis</span>'
@@ -193,22 +191,24 @@ elif st.session_state.vista == "detalle":
     st.markdown(ev['descripcion'])
     st.write("")
 
-    # SECCIÓN DE DATOS Y POLÍTICAS (Renderizado Markdown Nativo corregido)
+    # SOLUCIÓN COMPLETA PARA EVITAR EL CAMPO DE TEXTO SIN TERMINAR
     if ev['tipo'] == "reserva_pago":
         pago = ev['datos_pago']
         
-        st.markdown(f"""
-        <div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">
-            <h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif;">Instrucciones de Reserva (CuentaRUT):</h4>
-            <p style="color: #FFFFFF; margin-bottom: 10px;">Realiza la transferencia para asegurar tu espacio de inmediato:</p>
-            <ul style="color: #00A8CC; padding-left: 20px;">
-                <li><b>Banco:</b> {pago['banco']}</li>
-                <li><b>Número de Cuenta:</b> {pago['cuenta']}</li>
-                <li><b>Monto del Abono:</b> {pago['monto']}</li>
-                <li><b>Correo:</b> {pago['correo']}</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
+        # Inyectamos el cuadro HTML usando concatenación limpia de strings en vez de f-strings triples anidadas
+        html_pago = (
+            '<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">'
+            '<h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif;">Instrucciones de Reserva (CuentaRUT):</h4>'
+            '<p style="color: #FFFFFF; margin-bottom: 10px;">Realiza la transferencia para asegurar tu espacio de inmediato:</p>'
+            '<ul style="color: #00A8CC; padding-left: 20px;">'
+            f'<li><b>Banco:</b> {pago["banco"]}</li>'
+            f'<li><b>Número de Cuenta:</b> {pago["cuenta"]}</li>'
+            f'<li><b>Monto del Abono:</b> {pago["monto"]}</li>'
+            f'<li><b>Correo:</b> {pago["correo"]}</li>'
+            '</ul>'
+            '</div>'
+        )
+        st.markdown(html_pago, unsafe_allow_html=True)
         
         st.write("")
         st.markdown("### ⚠️ Detalles del Evento (Términos y Condiciones):")
@@ -228,7 +228,7 @@ elif st.session_state.vista == "detalle":
 
     st.write("")
 
-    # FORMULARIO DE ASIGNACIÓN
+    # FORMULARIO DE RESERVAS
     if ev['tipo'] in ["reserva_gratis", "reserva_pago"]:
         with st.form("formulario_reserva_dinamico"):
             st.subheader("Completa tus datos para la mesa")
@@ -300,6 +300,21 @@ elif st.session_state.vista == "detalle":
                         mensaje_codificado = requests.utils.quote(mensaje_wa)
                         url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
 
-                        st.markdown(f"""
-                            <div style="background-color: #ff007f1a; padding: 15px; border-radius: 8px; border: 1px dashed #ff007f; margin-bottom: 15px;">
-                                <p style="margin: 0; color: #ff007f; font-weight: bold; text-align
+                        # HTML plano e independiente para evitar colisiones de f-strings triples
+                        html_aviso_final = (
+                            '<div style="background-color: #ff007f1a; padding: 15px; border-radius: 8px; border: 1px dashed #ff007f; margin-bottom: 15px;">'
+                            '<p style="margin: 0; color: #ff007f; font-weight: bold; text-align: center;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO! ⚠️</p>'
+                            f'<p style="margin: 5px 0 0 0; font-size: 14px; text-align: center;">{texto_instruccion_wa}</p>'
+                            '</div>'
+                        )
+                        st.markdown(html_aviso_final, unsafe_allow_html=True)
+
+                        st.link_button("🟢 Notificar Reserva por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
+                    else:
+                        st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
+                except Exception as e:
+                    st.error(f"Error al procesar la reserva: {e}")
+            else:
+                st.warning("Por favor, rellena tu Nombre y tu RUT antes de enviar la solicitud.")
+    else:
+        st.warning("📍 Este evento no requiere reserva previa de mesas. ¡Te esperamos por orden de llegada al local!")
