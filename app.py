@@ -64,20 +64,20 @@ EVENTOS = [
         "datos_pago": {
             "banco": "BancoEstado (CuentaRUT)",
             "cuenta": "11.633.847-5",
-            "monto": "Desde $3.000",
+            "monto": "Desde $10.000",
             "correo": "clubrepiola@gmail.com"
         },
-        "politicas": "Adhesión voluntaria va directo a los artistas. Validamos con tu RUT.",
-        "precio_min": "$3.000"
+        "politicas": "Adhesión voluntaria paga directo a los artistas..",
+        "precio_min": "$3.000 (extra a la reserva)"
     },
     {
         "id": "promo_jueves",
-        "titulo": "Jueves de Promo: 2x1 🍹",
+        "titulo": "Jueves de Poesía",
         "fecha": "Todos los Jueves",
         "hora": "18:00 a 24:00 hrs",
         "tipo": "solo_info",
-        "descripcion": "Todos los Jueves tenemos 2x1 en combinados nacionales. ¡No requiere reserva, solo llega temprano!",
-        "politicas": "Promoción válida hasta agotar stock. No acumulable.",
+        "descripcion": "Todos los Jueves tenemos Poesía Clandestina. ¡No requiere reserva, solo llega temprano porque se acaba el espacio!",
+        "politicas": "Es por orden de llegada",
         "precio_min": "Solo Info"
     }
 ]
