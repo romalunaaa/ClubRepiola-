@@ -245,7 +245,7 @@ elif st.session_state.vista == "detalle":
         st.markdown("""
             <div style="background-color: #16161F; padding: 20px; border-radius: 8px; border: 1px solid #E11D74; margin-bottom: 20px; text-align:center;">
                 <span style="color: #E11D74; font-size: 18px; font-weight: bold;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO!</span><br><br>
-                <span style="font-size: 15px; color: #FFF;">Tus datos ya están guardados. Para validar definitivamente tus asientos, presiona el botón verde de abajo para enviarnos el comprobante de transferencia directo a nuestro WhatsApp corporativo.</span>
+                <span style="font-size: 15px; color: #FFF;">Tus datos ya están guardados. Para validar definitivamente tus asientos, presiona el botón rosado de abajo para enviarnos el comprobante de transferencia directo a nuestro WhatsApp.</span>
             </div>
         """, unsafe_allow_html=True)
         
@@ -255,7 +255,7 @@ elif st.session_state.vista == "detalle":
             f"🆔 *RUT:* {info['rut']}\n"
             f"📅 *Evento:* {ev['titulo']}\n"
             f"🪑 *Asientos:* {info['asientos']}\n\n"
-            f"Acepto los términos de abono consumible. Adjunto el comprobante de transferencia por $10.000 para validar."
+            f"Acepto los términos de abono. Adjunto el comprobante de transferencia por $10.000 para validar."
         )
         mensaje_codificado = requests.utils.quote(mensaje_wa)
         url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
