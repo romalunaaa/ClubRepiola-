@@ -290,7 +290,8 @@ elif st.session_state.vista == "detalle":
             <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
             <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible en el local) a la siguiente cuenta:</p>
             <table style="width:100%; border-collapse: collapse; font-size: 14px; color: #FFF;">
-                <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>Banco Santander (Cuenta Corriente)</b></td></tr>
+                <tr><td style="padding: 4px 0; color: #8E8E93;">Nombre del Titular:</td><td><b>Juan Carlos Quiroz</b></td></tr>
+                <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>Santander (Cuenta Corriente)</b></td></tr>
                 <tr><td style="padding: 4px 0; color: #8E8E93;">Rut:</td><td><b>11.633.847-5</b></td></tr>
                 <tr><td style="padding: 4px 0; color: #8E8E93;">N de Cuenta:</td><td><b>0000-64583867</b></td></tr>
                 <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
