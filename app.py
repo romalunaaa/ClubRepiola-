@@ -40,7 +40,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS (Actualizada con Afiches Reales)
+# BASE DE DATOS DE EVENTOS (Todos requieren Abono de Reserva)
 # ==============================================================================
 EVENTOS = [
     {
@@ -48,55 +48,49 @@ EVENTOS = [
         "titulo": "Tiktuarawitaki en vivo: poesía, música e ilustración",
         "fecha": "Viernes 03 de Julio de 2026",
         "hora": "21:00 hrs",
-        "tipo": "reserva_pago",
         "imagen": "image_0563da.jpg",
+        "show_info": "🎟️ Entrada/Adhesión voluntaria en puerta desde $3.000",
         "descripcion": """Te invitamos a ser parte de una presentación especial de Tiktuarawitaki: Revitalizando la Herencia Cultural 🎨📖🎶
 
 Una experiencia interdisciplinaria que une dibujo en vivo, poesía y música, inspirada en la obra de Gabriela Mistral y Manuel Rojas, donde la palabra, la imagen y el sonido se encuentran para dar vida a una nueva mirada sobre nuestra memoria cultural.
 
 Esta presentación tiene además un propósito muy especial: reunir fondos para nuestra participación en una próxima presentación en Buenos Aires, llevando esta propuesta chilena a nuevos espacios de encuentro artístico y cultural. 🇨🇱✨""",
-        "datos_pago": {
-            "banco": "BancoEstado (CuentaRUT)",
-            "cuenta": "11.633.847-5",
-            "monto": "$10.000 (Abono Consumible)",
-            "correo": "clubrepiola@gmail.com"
-        },
         "politicas": """
-1. **Abono Consumible:** El valor de la reserva es de **$10.000**, los cuales se descontarán en su totalidad de tu consumo total en el local. Adhesión voluntaria en puerta desde $3.000.
-2. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del dinero.
-3. **Tolerancia de espera:** La mesa se guardará **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs).
-        """,
-        "precio_min": "🎟️ Adhesión voluntaria desde $3.000"
+1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
+2. **Adhesión del Show:** El evento cuenta con una adhesión voluntaria en puerta sugerida desde **$3.000** destinada a los artistas.
+3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
+4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs).
+        """
     },
     {
         "id": "soa_01",
         "titulo": "Soa Borgoña en: Salida (De todo se sale) 🎭",
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "20:00 hrs",
-        "tipo": "reserva_gratis",
         "imagen": "image_0563bc.jpg",
+        "show_info": "🎁 Entrada Liberada (Aporte Voluntario al artista)",
         "descripcion": "Disfruta de una íntima y potente velada junto a Soa Borgoña en su presentación interactiva. Música, reflexiones y arte se conjugan bajo la premisa de que 'De todo se sale'. Una propuesta imperdible para comenzar el sábado por la noche.",
         "politicas": """
-1. **Entrada Liberada / Aporte Voluntario:** No se exige un pago fijo previo para asegurar tu lugar.
-2. **Tolerancia de espera:** Las ubicaciones se reservan **solo por 30 minutos** (hasta las 20:30 hrs). Luego el espacio se liberará.
-3. **Aporte:** Se sugiere un aporte voluntario al finalizar la presentación para apoyar el despliegue del artista.
-        """,
-        "precio_min": "🎁 Aporte Voluntario"
+1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
+2. **Entrada Liberada:** El show no cobra una entrada fija. Te invitamos a realizar un aporte voluntario al finalizar la presentación para apoyar al artista.
+3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
+4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 20:30 hrs).
+        """
     },
     {
         "id": "karaoke_01",
         "titulo": "Sábado de Karaoke 🎤",
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "22:00 hrs",
-        "tipo": "reserva_gratis",
         "imagen": None,
+        "show_info": "🎁 Entrada Liberada",
         "descripcion": "¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios justo después de la función de teatro. Ideal para celebrar con amigos en un ambiente ultra prendido.",
         "politicas": """
-1. **Entrada Liberada:** No se cobra entrada previa.
-2. **Tolerancia de espera:** La mesa se reserva **solo por 30 minutos** (hasta las 22:30 hrs). Pasado ese tiempo se asignará por orden de llegada.
-3. **Propina:** Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el karaoke en vivo.
-        """,
-        "precio_min": "🎁 Aporte Voluntario"
+1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
+2. **Entrada Liberada:** No se cobra entrada por asistir al karaoke. Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el formato en vivo.
+3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
+4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** (hasta las 22:30 hrs).
+        """
     }
 ]
 
@@ -156,16 +150,12 @@ if st.session_state.vista == "lista":
     st.write("Explora nuestra cartelera y presiona el botón para reservar tus asientos.")
     st.write("---")
 
-    st.warning("Cupos Limitados. Disponemos de solo 35 asientos por función para resguardar la comodidad y la intimidad del show.")
-    st.info("**Nota:** Para aprovechar al máximo nuestro espacio, algunas de nuestras mesas se comparten con otros clientes.")
+    st.warning("⚠️ **Nota sobre Reservas:** Todas las reservas requieren un abono de **$10.000**, el cual es **100% consumible** en el local.")
+    st.info("Disponemos de solo 35 asientos por función para resguardar la comodidad y la intimidad del show.")
     st.write("")
 
     for ev in EVENTOS:
-        if ev['tipo'] == "reserva_pago":
-            badge_html = '<span class="badge-pago">Requiere Adhesión</span>'
-        else:
-            badge_html = '<span class="badge-gratis">Reserva Cupo</span>'
-
+        badge_html = '<span class="badge-pago">Mesa Requiere Abono ($10.000)</span>'
         asientos_libres = st.session_state.asientos_disponibles[ev["id"]]
 
         html_tarjeta = f"""
@@ -173,7 +163,7 @@ if st.session_state.vista == "lista":
             <div class="card-title">{ev['titulo']}</div>
             <div class="card-date">📅 {ev['fecha']} | ⏰ {ev['hora']}</div>
             {badge_html} 
-            <span style="color:gray; font-size:13px; margin-left:10px;">Valor: {ev['precio_min']}</span>
+            <br><span style="color:gray; font-size:13px;">Acceso Show: {ev['show_info']}</span>
             <br><span style="color:#00A8CC; font-size:14px; font-weight:bold;">🪑 Asientos Disponibles: {asientos_libres} / 35</span>
         </div>
         """
@@ -200,12 +190,12 @@ elif st.session_state.vista == "detalle":
     st.write("")
     st.title(ev['titulo'])
     
-    # Renderizar Imagen del Evento si existe
+    # Renderizar Imagen del Evento de forma limpia (Si falla o no está, pasa en silencio)
     if ev['imagen']:
         try:
             st.image(ev['imagen'], use_container_width=True)
         except:
-            st.caption("(Imagen del evento cargándose...)")
+            pass
 
     st.info(f"📅 **Fecha:** {ev['fecha']} | ⏰ **Hora:** {ev['hora']} | 🪑 **Cupos Restantes:** {asientos_libres} asientos libres.")
     
@@ -213,29 +203,21 @@ elif st.session_state.vista == "detalle":
     st.markdown(ev['descripcion'])
     st.write("")
 
-    if ev['tipo'] == "reserva_pago":
-        pago = ev['datos_pago']
-        html_pago = (
-            '<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">'
-            '<h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif;">Instrucciones de Reserva (CuentaRUT):</h4>'
-            '<p style="color: #FFFFFF; margin-bottom: 10px;">Realiza la transferencia para asegurar tu espacio de inmediato:</p>'
-            '<ul style="color: #00A8CC; padding-left: 20px;">'
-            f'<li><b>Banco:</b> {pago["banco"]}</li>'
-            f'<li><b>Número de Cuenta:</b> {pago["cuenta"]}</li>'
-            f'<li><b>Monto del Abono:</b> {pago["monto"]}</li>'
-            f'<li><b>Correo:</b> {pago["correo"]}</li>'
-            '</ul>'
-            '</div>'
-        )
-        st.markdown(html_pago, unsafe_allow_html=True)
-    
-    else:
-        st.markdown("""
-        <div style="background-color: #162A16; padding: 20px; border-radius: 12px; border: 2px solid #28a745;">
-            <h4 style="color: #28a745; margin-top:0; font-family: sans-serif;">✅ Información de Acceso (Aporte Voluntario):</h4>
-            <p style="color: #FFFFFF; margin-bottom: 0;">Para este evento no necesitas realizar abonos previos de dinero. Asegura tus asientos rellenando el formulario de abajo.</p>
-        </div>
-        """, unsafe_allow_html=True)
+    # Cuadro Único de Instrucciones de Abono
+    html_pago = (
+        '<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">'
+        '<h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif;">Instrucciones de Abono para la Mesa (CuentaRUT):</h4>'
+        '<p style="color: #FFFFFF; margin-bottom: 10px;">Para asegurar tus asientos se requiere transferir un abono (100% consumible en el local):</p>'
+        '<ul style="color: #00A8CC; padding-left: 20px;">'
+        '<li><b>Banco:</b> BancoEstado (CuentaRUT)</li>'
+        '<li><b>Número de Cuenta:</b> 11.633.847-5</li>'
+        '<li><b>Monto del Abono:</b> $10.000</li>'
+        '<li><b>Correo:</b> clubrepiola@gmail.com</li>'
+        f'<li><b>Detalle del Show:</b> {ev["show_info"]}</li>'
+        '</ul>'
+        '</div>'
+    )
+    st.markdown(html_pago, unsafe_allow_html=True)
         
     st.write("")
     st.markdown("### ⚠️ Detalles del Evento (Términos y Condiciones):")
@@ -246,6 +228,7 @@ elif st.session_state.vista == "detalle":
     if asientos_libres > 0:
         with st.form("formulario_reserva_dinamico"):
             st.subheader("Completa tus datos para reservar")
+            st.error("💳 **Este evento requiere Abono Consumible ($10.000) para asegurar los asientos.**")
             
             # Selector de cantidad de asientos (Mesa de 1 a 20 personas)
             max_seleccionable = min(20, asientos_libres)
@@ -296,12 +279,8 @@ elif st.session_state.vista == "detalle":
                         st.balloons()
                         st.success(f"🎉 ¡Pre-reserva de {asientos_solicitados} asientos registrada con éxito!")
 
-                        if ev['tipo'] != "reserva_pago":
-                            remate_wa = "Acepto los términos y la tolerancia de 30 minutos de espera. ¡Nos vemos allá! 🎤"
-                            texto_instruccion_wa = "Para validar y guardar tus asientos de forma definitiva, presiona el botón verde de abajo para notificarnos vía WhatsApp."
-                        else:
-                            remate_wa = f"Acepto los términos de abono consumible. Adjunto comprobante de transferencia por los asientos solicitados. 👇"
-                            texto_instruccion_wa = "Para validar tu abono, presiona el botón de abajo para abrir WhatsApp y <b>enviarnos la captura del comprobante</b>."
+                        remate_wa = f"Acepto los términos de abono consumible. Adjunto comprobante de transferencia por $10.000 para validar mis asientos. 👇"
+                        texto_instruccion_wa = "Para validar tus asientos, presiona el botón de abajo para abrir WhatsApp y <b>enviarnos la captura del comprobante de transferencia</b>."
 
                         mensaje_wa = (
                             f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
@@ -324,7 +303,6 @@ elif st.session_state.vista == "detalle":
                         st.markdown(html_aviso_final, unsafe_allow_html=True)
                         st.link_button("🟢 Notificar Reserva por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
                         
-                        # Esperar un momento y recargar la vista para actualizar el cupo en pantalla
                         st.button("Actualizar pantalla", on_click=volver_a_lista)
                         
                     else:
