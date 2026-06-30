@@ -136,9 +136,14 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
         "titulo": "Sábado de Karaoke 🎤",
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "22:00 hrs",
-        "imagen": None,
+        "imagen":"karaoke.jpeg",
         "show_info": "Entrada Liberada",
-        "descripcion": "¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios justo después de la función de teatro. Ideal para celebrar con amigos en un ambiente ultra prendido.",
+        "descripcion": "​🇺🇸🎰 ¡CUALQUIER EXCUSA ES BUENA PARA ARMAR EL MAMBO! 🎰🇺🇸
+​Este sábado 4 de julio nos agarramos de la fiesta gringa para hacer un karaoke especial en Club Repiola.
+​🎤 La dinámica: Canta un tema en inglés o una reversión al español de un artista gringo y te ganas el derecho a tirar la ruleta. Si tienes suerte... ¡te llevas un cope gratis! 🍹🔥
+​🎙️ Conduce: Solo Emilia
+🎛️ Produce: Estación Musical
+​¡Ven a cantar, jugar y pasar un sábado repiola! No te lo pierdas. ✨",
         "politicas": """
 * **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
 * **Entrada Liberada:** No se cobra entrada por asistir al karaoke. Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el formato en vivo.
@@ -199,7 +204,7 @@ if st.session_state.vista == "lista":
     st.markdown("Selecciona un evento de la cartelera para ver los detalles y reservar tus asientos.")
     
     # UX: Combinamos las notas de info/warning molestas en una sola línea sutil aclaratoria
-    st.markdown("> **Nota:** Todas las funciones tienen un aforo exclusivo de 35 asientos. Las reservas requieren un abono de $10.000, invertido al 100% en tu consumo en el local.")
+    st.markdown("> **Nota:** Todas las funciones tienen un aforo exclusivo de 35 asientos. Las reservas requieren un abono de $10.000, el cual se descontará al 100% del consumo realizado en el bar.")
     st.write("")
 
     for ev in EVENTOS:
@@ -258,8 +263,9 @@ elif st.session_state.vista == "detalle":
         <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
         <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible en el local) a la siguiente cuenta:</p>
         <table style="width:100%; border-collapse: collapse; font-size: 14px; color: #FFF;">
-            <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>BancoEstado (CuentaRUT)</b></td></tr>
-            <tr><td style="padding: 4px 0; color: #8E8E93;">Número:</td><td><b>11.633.847-5</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>Banco Santander (Cuenta Corriente)</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Rut:</td><td><b>11.633.847-5</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">N de Cuenta:</td><td><b>0000-64583867</b></td></tr>
             <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
             <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>clubrepiola@gmail.com</b></td></tr>
         </table>
