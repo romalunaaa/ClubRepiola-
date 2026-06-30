@@ -267,7 +267,7 @@ elif st.session_state.vista == "detalle":
             <tr><td style="padding: 4px 0; color: #8E8E93;">Rut:</td><td><b>11.633.847-5</b></td></tr>
             <tr><td style="padding: 4px 0; color: #8E8E93;">N de Cuenta:</td><td><b>0000-64583867</b></td></tr>
             <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
-            <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>clubrepiola@gmail.com</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>repiolaclub@gmail.com</b></td></tr>
         </table>
     </div>
     """
