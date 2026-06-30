@@ -131,19 +131,19 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
 * **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 20:30 hrs).
         """
     },
-    {
+   {
         "id": "karaoke_01",
         "titulo": "Sábado de Karaoke 🎤",
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "22:00 hrs",
-        "imagen":"karaoke.jpeg",
+        "imagen": "karaoke.jpeg",
         "show_info": "Entrada Liberada",
-        "descripcion": "​🇺🇸🎰 ¡CUALQUIER EXCUSA ES BUENA PARA ARMAR EL MAMBO! 🎰🇺🇸
-​Este sábado 4 de julio nos agarramos de la fiesta gringa para hacer un karaoke especial en Club Repiola.
-​🎤 La dinámica: Canta un tema en inglés o una reversión al español de un artista gringo y te ganas el derecho a tirar la ruleta. Si tienes suerte... ¡te llevas un cope gratis! 🍹🔥
-​🎙️ Conduce: Solo Emilia
+        "descripcion": """🇺🇸🎰 ¡CUALQUIER EXCUSA ES BUENA PARA ARMAR EL MAMBO! 🎰🇺🇸
+Este sábado 4 de julio nos agarramos de la fiesta gringa para hacer un karaoke especial en Club Repiola.
+🎤 La dinámica: Canta un tema en inglés o una reversión al español de un artista gringo y te ganas el derecho a tirar la ruleta. Si tienes suerte... ¡te llevas un cope gratis! 🍹🔥
+🎙️ Conduce: Solo Emilia
 🎛️ Produce: Estación Musical
-​¡Ven a cantar, jugar y pasar un sábado repiola! No te lo pierdas. ✨",
+¡Ven a cantar, jugar y pasar un sábado repiola! No te lo pierdas. ✨""",
         "politicas": """
 * **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
 * **Entrada Liberada:** No se cobra entrada por asistir al karaoke. Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el formato en vivo.
@@ -151,7 +151,6 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
 * **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** (hasta las 22:30 hrs).
         """
     }
-]
 
 # ==============================================================================
 # MANEJO DE ESTADO
