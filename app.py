@@ -310,8 +310,10 @@ elif st.session_state.vista == "detalle":
                     respuesta = requests.post(url_formulario, data=datos_reserva_forms)
 
                     if respuesta.status_code == 200:
+                        # 1. Restamos los asientos del estado global inmediatamente
                         st.session_state.asientos_disponibles[ev["id"]] -= asientos_solicitados
                         
+                        # [Tu código actual de guardado en CSV]
                         datos_nueva_reserva = {
                             "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
                             "Evento": ev['titulo'],
@@ -328,10 +330,11 @@ elif st.session_state.vista == "detalle":
                             index=False,
                         )
 
+                        # 2. Mostramos el éxito de la operación
                         st.balloons()
                         st.success(f"🎉 ¡Pre-reserva de {asientos_solicitados} asientos registrada!")
 
-                        # Mensaje de WhatsApp limpio y directo
+                        # 3. Preparamos el mensaje de WhatsApp (Tu código actual)
                         mensaje_wa = (
                             f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
                             f"👤 *Nombre:* {nombre}\n"
@@ -340,11 +343,9 @@ elif st.session_state.vista == "detalle":
                             f"🪑 *Asientos:* {asientos_solicitados}\n\n"
                             f"Acepto los términos de abono consumible. Adjunto el comprobante de transferencia por $10.000 para validar."
                         )
-
                         mensaje_codificado = requests.utils.quote(mensaje_wa)
                         url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
 
-                        # UX: Caja final limpia y enfocada en el CTA de WhatsApp
                         st.markdown("""
                             <div style="background-color: #16161F; padding: 15px; border-radius: 8px; border: 1px solid #E11D74; margin-bottom: 15px; text-align:center;">
                                 <span style="color: #E11D74; font-weight: bold;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO!</span><br>
@@ -354,13 +355,11 @@ elif st.session_state.vista == "detalle":
                         
                         st.link_button("🟢 Enviar Comprobante por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
                         st.write("")
-                        st.button("Volver al Inicio", on_click=volver_a_lista, use_container_width=True)
                         
-                    else:
-                        st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
-                except Exception as e:
-                    st.error(f"Error al procesar la reserva: {e}")
-            else:
-                st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
-    else:
-        st.error("🚨 Lo sentimos, las reservas para este evento están AGOTADAS.")
+                        # 4. CLAVE: El botón ahora cambia el estado y limpia la vista al presionarse
+                        if st.button("Volver al Inicio", use_container_width=True):
+                            volver_a_lista()
+                            st.rerun()
+                            
+                        # 5. CLAVE: Forzamos el rerun aquí para que Streamlit guarde el descuento de asientos al instante
+                        st.rerun()
