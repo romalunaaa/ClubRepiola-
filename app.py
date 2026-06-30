@@ -40,7 +40,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS (Todos requieren Abono de Reserva)
+# BASE DE DATOS DE EVENTOS (Corregida con extensión .jpeg)
 # ==============================================================================
 EVENTOS = [
     {
@@ -48,7 +48,7 @@ EVENTOS = [
         "titulo": "Tiktuarawitaki en vivo: poesía, música e ilustración",
         "fecha": "Viernes 03 de Julio de 2026",
         "hora": "21:00 hrs",
-        "imagen": "image_0563da.jpg",
+        "imagen": "image_0563da.jpeg",  # <-- Cambiado a .jpeg
         "show_info": "🎟️ Entrada/Adhesión voluntaria en puerta desde $3.000",
         "descripcion": """Te invitamos a ser parte de una presentación especial de Tiktuarawitaki: Revitalizando la Herencia Cultural 🎨📖🎶
 
@@ -57,7 +57,7 @@ Una experiencia interdisciplinaria que une dibujo en vivo, poesía y música, in
 Esta presentación tiene además un propósito muy especial: reunir fondos para nuestra participación en una próxima presentación en Buenos Aires, llevando esta propuesta chilena a nuevos espacios de encuentro artístico y cultural. 🇨🇱✨""",
         "politicas": """
 1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-2. **Adhesión del Show:** El evento cuenta con una adhesión voluntaria en puerta sugerida desde **$3.000** destinada a los artistas.
+2. **Adhesión del Show:** El evento cuenta con una adhesión voluntaria en puerta sugerida desde **$3.000** destinada a los artists.
 3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
 4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs).
         """
@@ -67,7 +67,7 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
         "titulo": "Soa Borgoña en: Salida (De todo se sale) 🎭",
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "20:00 hrs",
-        "imagen": "image_0563bc.jpg",
+        "imagen": "image_0563bc.jpeg",  # <-- Cambiado a .jpeg
         "show_info": "🎁 Entrada Liberada (Aporte Voluntario al artista)",
         "descripcion": "Disfruta de una íntima y potente velada junto a Soa Borgoña en su presentación interactiva. Música, reflexiones y arte se conjugan bajo la premisa de que 'De todo se sale'. Una propuesta imperdible para comenzar el sábado por la noche.",
         "politicas": """
