@@ -196,7 +196,7 @@ if st.session_state.vista == "lista":
     st.write("")
 
     for ev in EVENTOS:
-        # Tarjeta visual limpia usando HTML estructurado sin indicador de asientos libres
+        # Quitada la 'f' inicial porque ya no procesa variables dinámicas en llaves
         html_tarjeta = f"""
         <div class="event-card-clean">
             <div class="card-title-clean">{ev['titulo']}</div>
@@ -246,8 +246,109 @@ elif st.session_state.vista == "detalle":
     st.markdown("### Sobre este evento")
     st.markdown(ev['descripcion'])
     
-    # UI: Bloque de transferencia ordenado e institucional
-    html_pago = f"""
+    # CORRECCIÓN: Se eliminó la 'f' inicial para que no falle con las llaves del CSS
+    html_pago = """
     <div class="bank-box">
         <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
-        <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible
+        <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible en el local) a la siguiente cuenta:</p>
+        <table style="width:100%; border-collapse: collapse; font-size: 14px; color: #FFF;">
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>Banco Santander (Cuenta Corriente)</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Rut:</td><td><b>11.633.847-5</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">N de Cuenta:</td><td><b>0000-64583867</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>repiolaclub@gmail.com</b></td></tr>
+        </table>
+    </div>
+    """
+    st.markdown(html_pago, unsafe_allow_html=True)
+        
+    with st.expander("📝 Términos, condiciones y políticas de asistencia"):
+        st.markdown(ev['politicas'])
+    
+    st.write("")
+
+    # FORMULARIO DE RESERVAS
+    with st.form("formulario_reserva_dinamico"):
+        st.markdown("### Completa tus datos para pre-reservar")
+        st.caption("Recuerda que para validar este espacio deberás enviar el comprobante de transferencia.")
+        
+        # Límite por grupo estándar de 20 personas
+        asientos_solicitados = st.selectbox(
+            "¿Cuántos asientos necesitas para tu grupo?",
+            list(range(1, 21)),
+            format_func=lambda x: f"Mesa / Espacio para {x} persona{'s' if x > 1 else ''}",
+            key=f"select_asientos_{ev['id']}"
+        )
+
+        nombre = st.text_input("Nombre completo de quien asiste", key=f"input_nombre_{ev['id']}")
+        rut = st.text_input("RUT del titular (para validar en puerta)", key=f"input_rut_{ev['id']}")
+
+        boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio", use_container_width=True)
+
+    if boton_confirmar:
+        if nombre and rut:
+            try:
+                url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
+                datos_reserva_forms = {
+                    "entry.2041447904": ev['titulo'],
+                    "entry.44496726": f"{asientos_solicitados} Asientos",
+                    "entry.970850673": nombre,
+                    "entry.2047753483": rut,
+                }
+
+                respuesta = requests.post(url_formulario, data=datos_reserva_forms)
+
+                if respuesta.status_code == 200:
+                    datos_nueva_reserva = {
+                        "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                        "Evento": ev['titulo'],
+                        "Mesa": f"{asientos_solicitados} Asientos",
+                        "Nombre": nombre,
+                        "RUT": rut,
+                        "Estado": "Pendiente",
+                    }
+                    nueva_reserva_df = pd.DataFrame([datos_nueva_reserva])
+                    nueva_reserva_df.to_csv(
+                        "reservas_local.csv",
+                        mode="a",
+                        header=not os.path.exists("reservas_local.csv"),
+                        index=False,
+                    )
+
+                    st.balloons()
+                    st.success(f"🎉 ¡Pre-reserva de {asientos_solicitados} asientos registrada!")
+
+                    # Mensaje de WhatsApp
+                    mensaje_wa = (
+                        f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
+                        f"👤 *Nombre:* {nombre}\n"
+                        f"🆔 *RUT:* {rut}\n"
+                        f"📅 *Evento:* {ev['titulo']}\n"
+                        f"🪑 *Asientos:* {asientos_solicitados}\n\n"
+                        f"Acepto los términos de abono consumible. Adjunto el comprobante de transferencia por $10.000 para validar."
+                    )
+
+                    mensaje_codificado = requests.utils.quote(mensaje_wa)
+                    url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
+
+                    # CORRECCIÓN: Se eliminó la 'f' inicial de este bloque HTML también
+                    st.markdown("""
+                        <div style="background-color: #16161F; padding: 15px; border-radius: 8px; border: 1px solid #E11D74; margin-bottom: 15px; text-align:center;">
+                            <span style="color: #E11D74; font-weight: bold;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO!</span><br>
+                            <span style="font-size: 14px; color: #FFF;">Para validar tus asientos, presiona el botón de abajo y envíanos la captura de la transferencia.</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                    st.link_button("🟢 Enviar Comprobante por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
+                    st.write("")
+                    st.button("Volver al Inicio", on_click=volver_a_lista, use_container_width=True)
+                    
+                    st.rerun()
+                    
+                else:
+                    st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
+                    
+            except Exception as e:
+                st.error(f"Error al procesar la reserva: {e}")
+        else:
+            st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
