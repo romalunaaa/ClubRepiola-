@@ -234,7 +234,7 @@ elif st.session_state.vista == "detalle":
     st.write("")
     
     # --------------------------------------------------------------------------
-    # SUB-VISTA: PANTALLA FIJA DE CONFIRMACIÓN (EVITA QUE SE BORRE AL REDIRECCIONAR)
+    # SUB-VISTA: PANTALLA FIJA DE CONFIRMACIÓN
     # --------------------------------------------------------------------------
     if st.session_state.reserva_exitosa:
         st.balloons()
@@ -249,7 +249,6 @@ elif st.session_state.vista == "detalle":
             </div>
         """, unsafe_allow_html=True)
         
-        # Generación segura del link hacia WhatsApp
         mensaje_wa = (
             f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
             f"👤 *Nombre:* {info['nombre']}\n"
@@ -269,7 +268,7 @@ elif st.session_state.vista == "detalle":
             st.rerun()
             
     # --------------------------------------------------------------------------
-    # SUB-VISTA: FORMULARIO NORMAL (SÓLO SE MUESTRA SI NO SE HA RESERVADO)
+    # SUB-VISTA: FORMULARIO NORMAL
     # --------------------------------------------------------------------------
     else:
         st.markdown(f"# {ev['titulo']}")
@@ -324,3 +323,46 @@ elif st.session_state.vista == "detalle":
 
         if boton_confirmar:
             if nombre and rut:
+                try:
+                    url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
+                    datos_reserva_forms = {
+                        "entry.2041447904": ev['titulo'],
+                        "entry.44496726": f"{asientos_solicitados} Asientos",
+                        "entry.970850673": nombre,
+                        "entry.2047753483": rut,
+                    }
+
+                    respuesta = requests.post(url_formulario, data=datos_reserva_forms)
+
+                    if respuesta.status_code == 200:
+                        datos_nueva_reserva = {
+                            "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                            "Evento": ev['titulo'],
+                            "Mesa": f"{asientos_solicitados} Asientos",
+                            "Nombre": nombre,
+                            "RUT": rut,
+                            "Estado": "Pendiente",
+                        }
+                        nueva_reserva_df = pd.DataFrame([datos_nueva_reserva])
+                        nueva_reserva_df.to_csv(
+                            "reservas_local.csv",
+                            mode="a",
+                            header=not os.path.exists("reservas_local.csv"),
+                            index=False,
+                        )
+
+                        st.session_state.info_reserva = {
+                            "nombre": nombre,
+                            "rut": rut,
+                            "asientos": asientos_solicitados
+                        }
+                        st.session_state.reserva_exitosa = True
+                        st.rerun()
+                        
+                    else:
+                        st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
+                        
+                except Exception as e:
+                    st.error(f"Error al procesar la reserva: {e}")
+            else:
+                st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
