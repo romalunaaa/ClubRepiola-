@@ -16,31 +16,85 @@ if "sys" not in sys.modules:
     sys.modules["sys"] = sys
 
 # ==============================================================================
-# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (Diseño Limpio y Seguro)
+# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (UI Premium y Limpia)
 # ==============================================================================
 st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
 
-# CSS seguro para las tarjetas contenedoras de la lista principal
+# UI/UX: Custom CSS para unificar la estética nocturna del Club sin saturar
 st.markdown("""
     <style>
-    .event-card {
-        background-color: #1A1A1A;
-        border: 1px solid #333;
-        border-left: 5px solid #E11D74;
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 5px;
+    /* Estilo general y fondos */
+    .stApp { background-color: #0F0F12; }
+    
+    /* Contenedor elegante para eventos en la lista */
+    .event-card-clean {
+        background-color: #1A1A22;
+        border: 1px solid #2A2A35;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: -10px;
     }
-    .card-title { color: #FFD31D !important; font-size: 22px !important; font-weight: bold !important; margin-bottom: 5px !important; font-family: sans-serif !important; }
-    .card-date { color: #00A8CC !important; font-size: 16px !important; margin-bottom: 10px !important; font-family: sans-serif !important; }
-    .badge-pago { background-color: #E11D74 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
-    .badge-gratis { background-color: #28a745 !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
-    .badge-info { background-color: #6c757d !important; color: white !important; padding: 4px 8px !important; border-radius: 5px !important; font-size: 12px !important; font-weight: bold !important; display: inline-block !important; }
+    .card-title-clean { 
+        color: #FFFFFF !important; 
+        font-size: 22px !important; 
+        font-weight: 700 !important; 
+        margin-bottom: 6px !important; 
+    }
+    .card-subtitle-clean { 
+        color: #A0A0AB !important; 
+        font-size: 15px !important; 
+        margin-bottom: 14px !important; 
+    }
+    
+    /* Badges de estado discretos pero legibles */
+    .badge-brand { 
+        background-color: #E11D74; 
+        color: white !important; 
+        padding: 4px 10px; 
+        border-radius: 6px; 
+        font-size: 12px; 
+        font-weight: 600; 
+        display: inline-block;
+        margin-right: 8px;
+    }
+    .badge-secondary { 
+        background-color: #2A2A35; 
+        color: #00A8CC !important; 
+        padding: 4px 10px; 
+        border-radius: 6px; 
+        font-size: 12px; 
+        font-weight: 600; 
+        display: inline-block;
+    }
+    
+    /* Caja de Datos de Transferencia en Detalle */
+    .bank-box {
+        background-color: #16161F;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #E11D74;
+        margin: 20px 0;
+    }
+    
+    /* Inputs y botones globales de Streamlit adaptados */
+    .stButton>button {
+        background-color: #E11D74 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        padding: 10px 20px !important;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #FF2E93 !important;
+        transform: translateY(-1px);
+    }
     </style>
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS (Corregida con extensión .jpeg)
+# BASE DE DATOS DE EVENTOS
 # ==============================================================================
 EVENTOS = [
     {
@@ -48,18 +102,18 @@ EVENTOS = [
         "titulo": "Tiktuarawitaki en vivo: poesía, música e ilustración",
         "fecha": "Viernes 03 de Julio de 2026",
         "hora": "21:00 hrs",
-        "imagen": "image_0563da.jpeg",  # <-- Cambiado a .jpeg
-        "show_info": "🎟️ Entrada/Adhesión voluntaria en puerta desde $3.000",
+        "imagen": "image_0563da.jpeg",
+        "show_info": "Entrada/Adhesión voluntaria en puerta desde $3.000",
         "descripcion": """Te invitamos a ser parte de una presentación especial de Tiktuarawitaki: Revitalizando la Herencia Cultural 🎨📖🎶
 
 Una experiencia interdisciplinaria que une dibujo en vivo, poesía y música, inspirada en la obra de Gabriela Mistral y Manuel Rojas, donde la palabra, la imagen y el sonido se encuentran para dar vida a una nueva mirada sobre nuestra memoria cultural.
 
 Esta presentación tiene además un propósito muy especial: reunir fondos para nuestra participación en una próxima presentación en Buenos Aires, llevando esta propuesta chilena a nuevos espacios de encuentro artístico y cultural. 🇨🇱✨""",
         "politicas": """
-1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-2. **Adhesión del Show:** El evento cuenta con una adhesión voluntaria en puerta sugerida desde **$3.000** destinada a los artists.
-3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
-4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs).
+* **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
+* **Adhesión del Show:** El evento cuenta con una adhesión voluntaria en puerta sugerida desde **$3.000** destinada a los artistas.
+* **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
+* **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs).
         """
     },
     {
@@ -67,14 +121,14 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
         "titulo": "Soa Borgoña en: Salida (De todo se sale) 🎭",
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "20:00 hrs",
-        "imagen": "image_0563bc.jpeg",  # <-- Cambiado a .jpeg
-        "show_info": "🎁 Entrada Liberada (Aporte Voluntario al artista)",
+        "imagen": "image_0563bc.jpeg",
+        "show_info": "Entrada Liberada (Aporte Voluntario al artista)",
         "descripcion": "Disfruta de una íntima y potente velada junto a Soa Borgoña en su presentación interactiva. Música, reflexiones y arte se conjugan bajo la premisa de que 'De todo se sale'. Una propuesta imperdible para comenzar el sábado por la noche.",
         "politicas": """
-1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-2. **Entrada Liberada:** El show no cobra una entrada fija. Te invitamos a realizar un aporte voluntario al finalizar la presentación para apoyar al artista.
-3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
-4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 20:30 hrs).
+* **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
+* **Entrada Liberada:** El show no cobra una entrada fija. Te invitamos a realizar un aporte voluntario al finalizar la presentación para apoyar al artista.
+* **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
+* **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 20:30 hrs).
         """
     },
     {
@@ -83,26 +137,24 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
         "fecha": "Sábado 04 de Julio de 2026",
         "hora": "22:00 hrs",
         "imagen": None,
-        "show_info": "🎁 Entrada Liberada",
+        "show_info": "Entrada Liberada",
         "descripcion": "¡Saca el artista que llevas dentro! Una noche cargada de buena música y ruletas con premios justo después de la función de teatro. Ideal para celebrar con amigos en un ambiente ultra prendido.",
         "politicas": """
-1. **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-2. **Entrada Liberada:** No se cobra entrada por asistir al karaoke. Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el formato en vivo.
-3. **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
-4. **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** (hasta las 22:30 hrs).
+* **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
+* **Entrada Liberada:** No se cobra entrada por asistir al karaoke. Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el formato en vivo.
+* **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
+* **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** (hasta las 22:30 hrs).
         """
     }
 ]
 
 # ==============================================================================
-# MANEJO DE ESTADO (Navegación y Asientos Disponibles)
+# MANEJO DE ESTADO
 # ==============================================================================
 if "vista" not in st.session_state:
     st.session_state.vista = "lista"
 if "evento_sel" not in st.session_state:
     st.session_state.evento_sel = None
-
-# Inicializar disponibilidad de asientos para cada evento (Capacidad: 35 asientos)
 if "asientos_disponibles" not in st.session_state:
     st.session_state.asientos_disponibles = {ev["id"]: 35 for ev in EVENTOS}
 
@@ -115,7 +167,7 @@ def volver_a_lista():
     st.session_state.evento_sel = None
 
 # ==============================================================================
-# BARRA LATERAL (INFORMACIÓN DE LA PYME)
+# BARRA LATERAL (INFORMACIÓN DE LA PYME - Simplificada y Elegante)
 # ==============================================================================
 with st.sidebar:
     try:
@@ -123,22 +175,19 @@ with st.sidebar:
     except:
         st.subheader("Club Repiola")
 
-    st.markdown("---")
     st.markdown("### 🕒 Horario")
-    st.write("• **Jueves:** 18:00 a 24:00 hrs")
-    st.write("• **Viernes y Sábado:** 18:00 a 03:00 hrs")
-    st.write("• **Domingo:** Solo Eventos reservados.")
+    st.caption("**Jueves:** 18:00 a 24:00 hrs\n\n**Viernes y Sábado:** 18:00 a 03:00 hrs\n\n**Domingo:** Solo Eventos reservados.")
 
     st.markdown("---")
     st.markdown("### 📍 Ubicación")
     st.caption("Vicuña Rozas 5032, Quinta Normal, Santiago, Chile")
 
     st.markdown("---")
-    st.markdown("### 📞 WhatsApp")
-    st.success("[+56 9 9677 7779](https://wa.me/56996777779)")
+    st.markdown("### 📞 Contacto")
+    st.link_button("💬 Hablar por WhatsApp", "https://wa.me/56996777779", use_container_width=True)
 
 # ==============================================================================
-# VISTA 1: HOME - EXPLORADOR DE EVENTOS
+# VISTA 1: HOME - EXPLORADOR DE EVENTOS (Menos ruido, Más Premium)
 # ==============================================================================
 if st.session_state.vista == "lista":
     try:
@@ -146,31 +195,30 @@ if st.session_state.vista == "lista":
     except:
         st.title("Club Repiola")
 
-    st.subheader("Próximos Eventos")
-    st.write("Explora nuestra cartelera y presiona el botón para reservar tus asientos.")
-    st.write("---")
-
-    st.warning("⚠️ **Nota sobre Reservas:** Todas las reservas requieren un abono de **$10.000**, el cual es **100% consumible** en el local.")
-    st.info("Disponemos de solo 35 asientos por función para resguardar la comodidad y la intimidad del show.")
+    st.markdown("## Próximos Eventos")
+    st.markdown("Selecciona un evento de la cartelera para ver los detalles y reservar tus asientos.")
+    
+    # UX: Combinamos las notas de info/warning molestas en una sola línea sutil aclaratoria
+    st.markdown("> **Nota:** Todas las funciones tienen un aforo exclusivo de 35 asientos. Las reservas requieren un abono de $10.000, invertido al 100% en tu consumo en el local.")
     st.write("")
 
     for ev in EVENTOS:
-        badge_html = '<span class="badge-pago">Mesa Requiere Abono ($10.000)</span>'
         asientos_libres = st.session_state.asientos_disponibles[ev["id"]]
-
+        
+        # Tarjeta visual limpia usando HTML estructurado
         html_tarjeta = f"""
-        <div class="event-card">
-            <div class="card-title">{ev['titulo']}</div>
-            <div class="card-date">📅 {ev['fecha']} | ⏰ {ev['hora']}</div>
-            {badge_html} 
-            <br><span style="color:gray; font-size:13px;">Acceso Show: {ev['show_info']}</span>
-            <br><span style="color:#00A8CC; font-size:14px; font-weight:bold;">🪑 Asientos Disponibles: {asientos_libres} / 35</span>
+        <div class="event-card-clean">
+            <div class="card-title-clean">{ev['titulo']}</div>
+            <div class="card-subtitle-clean">📅 {ev['fecha']} &nbsp;&middot;&nbsp; ⏰ {ev['hora']}</div>
+            <span class="badge-brand">Mesa requiere abono ($10.000)</span>
+            <span class="badge-secondary">🪑 {asientos_libres} / 35 Asientos libres</span>
+            <div style="margin-top: 10px; font-size: 13px; color: #8E8E93;">Acceso: {ev['show_info']}</div>
         </div>
         """
         st.markdown(html_tarjeta, unsafe_allow_html=True)
         
-        texto_boton = "✨ Ver Información y Reservar Asientos"
-        if st.button(texto_boton, key=ev['id'], use_container_width=True):
+        # Botón nativo perfectamente integrado debajo de su tarjeta
+        if st.button("Ver Información y Reservar", key=ev['id'], use_container_width=True):
             ir_a_detalles(ev)
             st.rerun()
             
@@ -183,54 +231,53 @@ elif st.session_state.vista == "detalle":
     ev = st.session_state.evento_sel
     asientos_libres = st.session_state.asientos_disponibles[ev["id"]]
     
-    if st.button("⬅️ Volver a la lista de eventos"):
+    # Botón volver discreto arriba a la izquierda
+    if st.button("← Volver a la cartelera", key="btn_back"):
         volver_a_lista()
         st.rerun()
 
     st.write("")
-    st.title(ev['titulo'])
+    st.markdown(f"# {ev['titulo']}")
     
-    # Renderizar Imagen del Evento de forma limpia (Si falla o no está, pasa en silencio)
     if ev['imagen']:
         try:
             st.image(ev['imagen'], use_container_width=True)
         except:
             pass
 
-    st.info(f"📅 **Fecha:** {ev['fecha']} | ⏰ **Hora:** {ev['hora']} | 🪑 **Cupos Restantes:** {asientos_libres} asientos libres.")
+    # Fila de datos rápidos del evento
+    st.markdown(f"**📅 Fecha:** {ev['fecha']} | **⏰ Hora:** {ev['hora']} | **🪑 Disponibilidad:** {asientos_libres} cupos restantes")
+    st.write("---")
     
     st.markdown("### Sobre este evento")
     st.markdown(ev['descripcion'])
-    st.write("")
-
-    # Cuadro Único de Instrucciones de Abono
-    html_pago = (
-        '<div style="background-color: #1A1A1A; padding: 20px; border-radius: 12px; border: 2px solid #E11D74;">'
-        '<h4 style="color: #FFD31D; margin-top:0; font-family: sans-serif;">Instrucciones de Abono para la Mesa (CuentaRUT):</h4>'
-        '<p style="color: #FFFFFF; margin-bottom: 10px;">Para asegurar tus asientos se requiere transferir un abono (100% consumible en el local):</p>'
-        '<ul style="color: #00A8CC; padding-left: 20px;">'
-        '<li><b>Banco:</b> BancoEstado (CuentaRUT)</li>'
-        '<li><b>Número de Cuenta:</b> 11.633.847-5</li>'
-        '<li><b>Monto del Abono:</b> $10.000</li>'
-        '<li><b>Correo:</b> clubrepiola@gmail.com</li>'
-        f'<li><b>Detalle del Show:</b> {ev["show_info"]}</li>'
-        '</ul>'
-        '</div>'
-    )
+    
+    # UI: Bloque de transferencia ordenado e institucional, no chillón
+    html_pago = f"""
+    <div class="bank-box">
+        <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
+        <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible en el local) a la siguiente cuenta:</p>
+        <table style="width:100%; border-collapse: collapse; font-size: 14px; color: #FFF;">
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>BancoEstado (CuentaRUT)</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Número:</td><td><b>11.633.847-5</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
+            <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>clubrepiola@gmail.com</b></td></tr>
+        </table>
+    </div>
+    """
     st.markdown(html_pago, unsafe_allow_html=True)
         
-    st.write("")
-    st.markdown("### ⚠️ Detalles del Evento (Términos y Condiciones):")
-    st.markdown(ev['politicas'])
+    with st.expander("📝 Términos, condiciones y políticas de asistencia"):
+        st.markdown(ev['politicas'])
+    
     st.write("")
 
     # FORMULARIO DE RESERVAS
     if asientos_libres > 0:
         with st.form("formulario_reserva_dinamico"):
-            st.subheader("Completa tus datos para reservar")
-            st.error("💳 **Este evento requiere Abono Consumible ($10.000) para asegurar los asientos.**")
+            st.markdown("### Completa tus datos para pre-reservar")
+            st.caption("Recuerda que para validar este espacio deberás enviar el comprobante de transferencia.")
             
-            # Selector de cantidad de asientos (Mesa de 1 a 20 personas)
             max_seleccionable = min(20, asientos_libres)
             asientos_solicitados = st.selectbox(
                 "¿Cuántos asientos necesitas para tu grupo?",
@@ -238,10 +285,10 @@ elif st.session_state.vista == "detalle":
                 format_func=lambda x: f"Mesa / Espacio para {x} persona{'s' if x > 1 else ''}"
             )
 
-            nombre = st.text_input("Nombre Completo de quien asiste")
-            rut = st.text_input("RUT del Titular (Para validar asistencia)")
+            nombre = st.text_input("Nombre completo de quien asiste")
+            rut = st.text_input("RUT del titular (para validar en puerta)")
 
-            boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio")
+            boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio", use_container_width=True)
 
         if boton_confirmar:
             if nombre and rut:
@@ -257,7 +304,6 @@ elif st.session_state.vista == "detalle":
                     respuesta = requests.post(url_formulario, data=datos_reserva_forms)
 
                     if respuesta.status_code == 200:
-                        # DESCONTAR DE LA DISPONIBILIDAD REAL
                         st.session_state.asientos_disponibles[ev["id"]] -= asientos_solicitados
                         
                         datos_nueva_reserva = {
@@ -277,39 +323,38 @@ elif st.session_state.vista == "detalle":
                         )
 
                         st.balloons()
-                        st.success(f"🎉 ¡Pre-reserva de {asientos_solicitados} asientos registrada con éxito!")
+                        st.success(f"🎉 ¡Pre-reserva de {asientos_solicitados} asientos registrada!")
 
-                        remate_wa = f"Acepto los términos de abono consumible. Adjunto comprobante de transferencia por $10.000 para validar mis asientos. 👇"
-                        texto_instruccion_wa = "Para validar tus asientos, presiona el botón de abajo para abrir WhatsApp y <b>enviarnos la captura del comprobante de transferencia</b>."
-
+                        # Mensaje de WhatsApp limpio y directo
                         mensaje_wa = (
                             f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
                             f"👤 *Nombre:* {nombre}\n"
                             f"🆔 *RUT:* {rut}\n"
                             f"📅 *Evento:* {ev['titulo']}\n"
-                            f"🪑 *Asientos Reservados:* {asientos_solicitados}\n\n"
-                            f"{remate_wa}"
+                            f"🪑 *Asientos:* {asientos_solicitados}\n\n"
+                            f"Acepto los términos de abono consumible. Adjunto el comprobante de transferencia por $10.000 para validar."
                         )
 
                         mensaje_codificado = requests.utils.quote(mensaje_wa)
                         url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
 
-                        html_aviso_final = (
-                            '<div style="background-color: #ff007f1a; padding: 15px; border-radius: 8px; border: 1px dashed #ff007f; margin-bottom: 15px;">'
-                            '<p style="margin: 0; color: #ff007f; font-weight: bold; text-align: center;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO! ⚠️</p>'
-                            f'<p style="margin: 5px 0 0 0; font-size: 14px; text-align: center;">{texto_instruccion_wa}</p>'
-                            '</div>'
-                        )
-                        st.markdown(html_aviso_final, unsafe_allow_html=True)
-                        st.link_button("🟢 Notificar Reserva por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
+                        # UX: Caja final limpia y enfocada en el CTA de WhatsApp
+                        st.markdown("""
+                            <div style="background-color: #16161F; padding: 15px; border-radius: 8px; border: 1px solid #E11D74; margin-bottom: 15px; text-align:center;">
+                                <span style="color: #E11D74; font-weight: bold;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO!</span><br>
+                                <span style="font-size: 14px; color: #FFF;">Para validar tus asientos, presiona el botón de abajo y envíanos la captura de la transferencia.</span>
+                            </div>
+                        """, unsafe_allow_html=True)
                         
-                        st.button("Actualizar pantalla", on_click=volver_a_lista)
+                        st.link_button("🟢 Enviar Comprobante por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
+                        st.write("")
+                        st.button("Volver al Inicio", on_click=volver_a_lista, use_container_width=True)
                         
                     else:
                         st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
                 except Exception as e:
                     st.error(f"Error al procesar la reserva: {e}")
             else:
-                st.warning("Por favor, rellena tu Nombre y tu RUT antes de enviar la solicitud.")
+                st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
     else:
         st.error("🚨 Lo sentimos, las reservas para este evento están AGOTADAS.")
