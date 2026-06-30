@@ -229,17 +229,22 @@ if st.session_state.vista == "lista":
             
         st.write("")
 
-# ==============================================================================
+
+  # ==============================================================================
 # VISTA 2: PÁGINA DE DETALLE Y FORMULARIO DE RESERVA
 # ==============================================================================
 elif st.session_state.vista == "detalle":
+    # Contenedor superior para forzar al navegador a renderizar desde el tope de la página
+    tope_pagina = st.container()
+    
     ev = st.session_state.evento_sel
     asientos_libres = st.session_state.asientos_disponibles[ev["id"]]
     
-    # Botón volver discreto arriba a la izquierda
-    if st.button("← Volver a la cartelera", key="btn_back"):
-        volver_a_lista()
-        st.rerun()
+    with tope_pagina:
+        # Botón volver discreto arriba a la izquierda
+        if st.button("← Volver a la cartelera", key="btn_back"):
+            volver_a_lista()
+            st.rerun()
 
     st.write("")
     st.markdown(f"# {ev['titulo']}")
@@ -257,7 +262,7 @@ elif st.session_state.vista == "detalle":
     st.markdown("### Sobre este evento")
     st.markdown(ev['descripcion'])
     
-    # UI: Bloque de transferencia ordenado e institucional, no chillón
+    # UI: Bloque de transferencia ordenado e institucional
     html_pago = f"""
     <div class="bank-box">
         <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
@@ -285,14 +290,17 @@ elif st.session_state.vista == "detalle":
             st.caption("Recuerda que para validar este espacio deberás enviar el comprobante de transferencia.")
             
             max_seleccionable = min(20, asientos_libres)
+            
+            # Usamos keys específicas para evitar el autofoco del navegador
             asientos_solicitados = st.selectbox(
                 "¿Cuántos asientos necesitas para tu grupo?",
                 list(range(1, max_seleccionable + 1)),
-                format_func=lambda x: f"Mesa / Espacio para {x} persona{'s' if x > 1 else ''}"
+                format_func=lambda x: f"Mesa / Espacio para {x} persona{'s' if x > 1 else ''}",
+                key=f"select_asientos_{ev['id']}"
             )
 
-            nombre = st.text_input("Nombre completo de quien asiste")
-            rut = st.text_input("RUT del titular (para validar en puerta)")
+            nombre = st.text_input("Nombre completo de quien asiste", key=f"input_nombre_{ev['id']}")
+            rut = st.text_input("RUT del titular (para validar en puerta)", key=f"input_rut_{ev['id']}")
 
             boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio", use_container_width=True)
 
@@ -310,6 +318,7 @@ elif st.session_state.vista == "detalle":
                     respuesta = requests.post(url_formulario, data=datos_reserva_forms)
 
                     if respuesta.status_code == 200:
+                        # Descuento inmediato de asientos
                         st.session_state.asientos_disponibles[ev["id"]] -= asientos_solicitados
                         
                         datos_nueva_reserva = {
@@ -331,6 +340,7 @@ elif st.session_state.vista == "detalle":
                         st.balloons()
                         st.success(f"🎉 ¡Pre-reserva de {asientos_solicitados} asientos registrada!")
 
+                        # Mensaje de WhatsApp
                         mensaje_wa = (
                             f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
                             f"👤 *Nombre:* {nombre}\n"
