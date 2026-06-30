@@ -309,7 +309,7 @@ elif st.session_state.vista == "detalle":
 
                     respuesta = requests.post(url_formulario, data=datos_reserva_forms)
 
-                   if respuesta.status_code == 200:
+                    if respuesta.status_code == 200:
                         st.session_state.asientos_disponibles[ev["id"]] -= asientos_solicitados
                         
                         datos_nueva_reserva = {
@@ -352,11 +352,8 @@ elif st.session_state.vista == "detalle":
                         
                         st.link_button("🟢 Enviar Comprobante por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
                         st.write("")
-                        
-                        # Botón para limpiar e ir al inicio
                         st.button("Volver al Inicio", on_click=volver_a_lista, use_container_width=True)
                         
-                        # El st.rerun() va aquí adentro, justo antes de terminar el flujo exitoso
                         st.rerun()
                         
                     else:
@@ -366,3 +363,5 @@ elif st.session_state.vista == "detalle":
                     st.error(f"Error al procesar la reserva: {e}")
             else:
                 st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
+    else:
+        st.error("🚨 Lo sentimos, las reservas para este evento están AGOTADAS.")
