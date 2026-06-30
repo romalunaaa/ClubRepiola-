@@ -131,7 +131,7 @@ Esta presentación tiene además un propósito muy especial: reunir fondos para 
 * **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 20:30 hrs).
         """
     },
-   {
+    {
         "id": "karaoke_01",
         "titulo": "Sábado de Karaoke 🎤",
         "fecha": "Sábado 04 de Julio de 2026",
@@ -151,6 +151,7 @@ Este sábado 4 de julio nos agarramos de la fiesta gringa para hacer un karaoke 
 * **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** (hasta las 22:30 hrs).
         """
     }
+]
 
 # ==============================================================================
 # MANEJO DE ESTADO
