@@ -109,7 +109,7 @@ LISTA_EVENTOS_CRUDO = [
         "dt_fecha": date(2026, 7, 10),
         "fecha": "Viernes 10 de Julio de 2026",
         "hora": "21:30 hrs",
-        "imagen": "carlos_encina.jpg", # Asegúrate de que el nombre del archivo sea correcto
+        "imagen": "carlos_encina.jpeg", # Asegúrate de que el nombre del archivo sea correcto
         "show_info": "Entrada Liberada (Aporte Voluntario)",
         "descripcion": """¡Vuelve el humor al Club! Carlos Encina presenta 'Tengo problemas con el frío - Wenachoro'. 
         Una rutina cargada de risas para pasar el invierno de la mejor manera. ¡No te quedes sin tu mesa!""",
@@ -121,7 +121,7 @@ LISTA_EVENTOS_CRUDO = [
         "dt_fecha": date(2026, 7, 31),
         "fecha": "Viernes 31 de Julio de 2026",
         "hora": "21:00 hrs",
-        "imagen": "espirocleta.jpg",
+        "imagen": "espirocleta.jpeg",
         "show_info": "Entrada Liberada (Aporte Voluntario)",
         "descripcion": """Elias Yuyo presenta 'Espirocleta'. Un show interactivo donde el público tiene el control. 
         ¡Chistes cortos, traumas, abuelos y más! Una dinámica única en Club Repiola.""",
