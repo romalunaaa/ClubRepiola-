@@ -5,7 +5,7 @@ import builtins
 import importlib
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, date
 import pandas as pd
 import requests
 import streamlit as st
@@ -16,17 +16,13 @@ if "sys" not in sys.modules:
     sys.modules["sys"] = sys
 
 # ==============================================================================
-# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM (UI Premium y Limpia)
+# CONFIGURACIÓN DE PÁGINA Y ESTILOS CUSTOM
 # ==============================================================================
 st.set_page_config(page_title="Club Repiola - Eventos", layout="centered")
 
-# UI/UX: Custom CSS para unificar la estética nocturna del Club sin saturar
 st.markdown("""
     <style>
-    /* Estilo general y fondos */
     .stApp { background-color: #0F0F12; }
-    
-    /* Contenedor elegante para eventos en la lista */
     .event-card-clean {
         background-color: #1A1A22;
         border: 1px solid #2A2A35;
@@ -45,8 +41,6 @@ st.markdown("""
         font-size: 15px !important; 
         margin-bottom: 14px !important; 
     }
-    
-    /* Badges de estado discretos pero legibles */
     .badge-brand { 
         background-color: #E11D74; 
         color: white !important; 
@@ -57,8 +51,15 @@ st.markdown("""
         display: inline-block;
         margin-right: 8px;
     }
-    
-    /* Caja de Datos de Transferencia en Detalle */
+    .badge-terraza { 
+        background-color: #28a745; 
+        color: white !important; 
+        padding: 4px 10px; 
+        border-radius: 6px; 
+        font-size: 12px; 
+        font-weight: 600; 
+        display: inline-block;
+    }
     .bank-box {
         background-color: #16161F;
         padding: 20px;
@@ -66,8 +67,6 @@ st.markdown("""
         border-left: 4px solid #E11D74;
         margin: 20px 0;
     }
-    
-    /* Inputs y botones globales de Streamlit adaptados */
     .stButton>button {
         background-color: #E11D74 !important;
         color: white !important;
@@ -85,64 +84,55 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# BASE DE DATOS DE EVENTOS
+# BASE DE DATOS DE EVENTOS (Actualizada)
+# Nota: He añadido 'dt_fecha' para que el sistema sepa cuándo borrar el evento.
 # ==============================================================================
-EVENTOS = [
+LISTA_EVENTOS_CRUDO = [
     {
-        "id": "tiktu_01",
-        "titulo": "Tiktuarawitaki en vivo: poesía, música e ilustración",
-        "fecha": "Viernes 03 de Julio de 2026",
-        "hora": "21:00 hrs",
-        "imagen": "image_0563da.jpeg",
-        "show_info": "Entrada/Adhesión voluntaria en puerta desde $3.000",
-        "descripcion": """Te invitamos a ser parte de una presentación especial de Tiktuarawitaki: Revitalizando la Herencia Cultural 🎨📖🎶
-
-Una experiencia interdisciplinaria que une dibujo en vivo, poesía y música, inspirada en la obra de Gabriela Mistral y Manuel Rojas, donde la palabra, la imagen y el sonido se encuentran para dar vida a una nueva mirada sobre nuestra memoria cultural.
-
-Esta presentación tiene además un propósito muy especial: reunir fondos para nuestra participación en una próxima presentación en Buenos Aires, llevando esta propuesta chilena a nuevos espacios de encuentro artístico y cultural. 🇨🇱✨""",
-        "politicas": """
-* **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-* **Adhesión del Show:** El evento cuenta con una adhesión voluntaria en puerta sugerida desde **$3.000** destinada a los artistas.
-* **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
-* **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 21:30 hrs).
-        """
-    },
-    {
-        "id": "soa_01",
-        "titulo": "Soa Borgoña en: Salida (De todo se sale) 🎭",
-        "fecha": "Sábado 04 de Julio de 2026",
-        "hora": "20:00 hrs",
-        "imagen": "image_0563bc.jpeg",
-        "show_info": "Entrada Liberada (Aporte Voluntario al artista)",
-        "descripcion": "Disfruta de una íntima y potente velada junto a Soa Borgoña en su presentación interactiva. Música, reflexiones y arte se conjugan bajo la premisa de que 'De todo se sale'. Una propuesta imperdible para comenzar el sábado por la noche.",
-        "politicas": """
-* **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-* **Entrada Liberada:** El show no cobra una entrada fija. Te invitamos a realizar un aporte voluntario al finalizar la presentación para apoyar al artista.
-* **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
-* **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** iniciado el evento (hasta las 20:30 hrs).
-        """
-    },
-    {
-        "id": "karaoke_01",
-        "titulo": "Sábado de Karaoke 🎤",
-        "fecha": "Sábado 04 de Julio de 2026",
-        "hora": "22:00 hrs",
-        "imagen": "karaoke.jpeg",
+        "id": "terraza_diaria",
+        "titulo": "Reserva Espacio Terraza (Sin Show) 🌿",
+        "dt_fecha": date(2026, 12, 31), # Fecha lejana para que siempre esté disponible
+        "fecha": "Disponible Jueves a Sábado",
+        "hora": "Desde las 18:00 hrs",
+        "imagen": None, 
         "show_info": "Entrada Liberada",
-        "descripcion": """🇺🇸🎰 ¡CUALQUIER EXCUSA ES BUENA PARA ARMAR EL MAMBO! 🎰🇺🇸
-Este sábado 4 de julio nos agarramos de la fiesta gringa para hacer un karaoke especial en Club Repiola.
-🎤 La dinámica: Canta un tema en inglés o una reversión al español de un artista gringo y te ganas el derecho a tirar la ruleta. Si tienes suerte... ¡te llevas un cope gratis! 🍹🔥
-🎙️ Conduce: Solo Emilia
-🎛️ Produce: Estación Musical
-¡Ven a cantar, jugar y pasar un sábado repiola! No te lo pierdas. ✨""",
-        "politicas": """
-* **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
-* **Entrada Liberada:** No se cobra entrada por asistir al karaoke. Te invitamos a dejarle una propina voluntaria a la animadora para apoyar el formato en vivo.
-* **Política de Cancelación:** Si avisas con un mínimo de **24 horas de anticipación**, se te devolverá el 100% del abono.
-* **Tolerancia de espera:** Tus asientos se guardarán **solo por 30 minutos** (hasta las 22:30 hrs).
-        """
+        "descripcion": """¿Quieres venir a compartir sin necesariamente ver el show? 
+        Nuestra terraza al aire libre es el lugar perfecto. 
+        \n\n✅ Espacio para hasta 20 personas.
+        \n✅ Ambiente relajado y ventilado.
+        \n❌ En este sector no hay visibilidad del show principal.""",
+        "politicas": "* **Abono Consumible:** $10.000 por mesa (se descuenta del total de tu cuenta).\n* **Capacidad:** Hasta 20 personas en total.\n* **Ubicación:** Aire libre."
+    },
+    {
+        "id": "carlos_encina_10",
+        "titulo": "Carlos Encina: Wenachoro 🎤",
+        "dt_fecha": date(2026, 7, 10),
+        "fecha": "Viernes 10 de Julio de 2026",
+        "hora": "21:30 hrs",
+        "imagen": "carlos_encina.jpg", # Asegúrate de que el nombre del archivo sea correcto
+        "show_info": "Entrada Liberada (Aporte Voluntario)",
+        "descripcion": """¡Vuelve el humor al Club! Carlos Encina presenta 'Tengo problemas con el frío - Wenachoro'. 
+        Una rutina cargada de risas para pasar el invierno de la mejor manera. ¡No te quedes sin tu mesa!""",
+        "politicas": "* **Abono Consumible:** $10.000 para reserva de mesa.\n* **Show:** Entrada liberada con aporte voluntario al artista al sobre."
+    },
+    {
+        "id": "espirocleta_31",
+        "titulo": "Espirocleta: Tu eliges los chistes 🎭",
+        "dt_fecha": date(2026, 7, 31),
+        "fecha": "Viernes 31 de Julio de 2026",
+        "hora": "21:00 hrs",
+        "imagen": "espirocleta.jpg",
+        "show_info": "Entrada Liberada (Aporte Voluntario)",
+        "descripcion": """Elias Yuyo presenta 'Espirocleta'. Un show interactivo donde el público tiene el control. 
+        ¡Chistes cortos, traumas, abuelos y más! Una dinámica única en Club Repiola.""",
+        "politicas": "* **Abono Consumible:** $10.000 para reserva de mesa.\n* **Show:** Entrada liberada con aporte voluntario."
     }
 ]
+
+# --- LÓGICA DE FILTRADO AUTOMÁTICO ---
+# Solo muestra eventos cuya fecha sea hoy o en el futuro
+hoy = date.today()
+EVENTOS = [ev for ev in LISTA_EVENTOS_CRUDO if ev['dt_fecha'] >= hoy]
 
 # ==============================================================================
 # MANEJO DE ESTADO
@@ -168,7 +158,7 @@ def volver_a_lista():
     st.session_state.info_reserva = {}
 
 # ==============================================================================
-# BARRA LATERAL (INFORMACIÓN DE LA PYME - Simplificada y Elegante)
+# BARRA LATERAL
 # ==============================================================================
 with st.sidebar:
     try:
@@ -177,18 +167,15 @@ with st.sidebar:
         st.subheader("Club Repiola")
 
     st.markdown("### 🕒 Horario")
-    st.caption("**Jueves:** 18:00 a 24:00 hrs\n\n**Viernes y Sábado:** 18:00 a 03:00 hrs\n\n**Domingo:** Solo Eventos reservados.")
-
+    st.caption("**Jueves:** 18:00 a 24:00 hrs\n\n**Viernes y Sábado:** 18:00 a 03:00 hrs")
     st.markdown("---")
     st.markdown("### 📍 Ubicación")
-    st.caption("Vicuña Rozas 5032, Quinta Normal, Santiago, Chile")
-
+    st.caption("Vicuña Rozas 5032, Quinta Normal")
     st.markdown("---")
-    st.markdown("### 📞 Contacto")
-    st.link_button("💬 Hablar por WhatsApp", "https://wa.me/56996777779", use_container_width=True)
+    st.link_button("💬 WhatsApp Ayuda", "https://wa.me/56996777779", use_container_width=True)
 
 # ==============================================================================
-# VISTA 1: HOME - EXPLORADOR DE EVENTOS (Menos ruido, Más Premium)
+# VISTA 1: CARTELERA
 # ==============================================================================
 if st.session_state.vista == "lista":
     try:
@@ -196,174 +183,96 @@ if st.session_state.vista == "lista":
     except:
         st.title("Club Repiola")
 
-    st.markdown("## Próximos Eventos")
-    st.markdown("Selecciona un evento de la cartelera para ver los detalles y reservar tus asientos.")
+    st.markdown("## Cartelera Próximos Eventos")
     
-    st.markdown("> **Nota:** Las reservas requieren un abono de $10.000, el cual se descontará al 100% del consumo realizado en el bar.")
-    st.write("")
-
+    if not EVENTOS:
+        st.info("No hay eventos programados por ahora. ¡Vuelve pronto!")
+    
     for ev in EVENTOS:
+        # Estilo diferente si es terraza
+        badge_html = '<span class="badge-terraza">🌿 Aire Libre</span>' if "terraza" in ev['id'] else '<span class="badge-brand">🎭 Show en Vivo</span>'
+        
         html_tarjeta = f"""
         <div class="event-card-clean">
             <div class="card-title-clean">{ev['titulo']}</div>
             <div class="card-subtitle-clean">📅 {ev['fecha']} &nbsp;&middot;&nbsp; ⏰ {ev['hora']}</div>
-            <span class="badge-brand">Mesa requiere abono ($10.000)</span>
-            <div style="margin-top: 10px; font-size: 13px; color: #8E8E93;">Acceso: {ev['show_info']}</div>
+            {badge_html}
+            <div style="margin-top: 10px; font-size: 13px; color: #8E8E93;">{ev['show_info']}</div>
         </div>
         """
         st.markdown(html_tarjeta, unsafe_allow_html=True)
         
-        if st.button("Ver Información y Reservar", key=ev['id'], use_container_width=True):
+        if st.button("Ver Detalles y Reservar", key=ev['id'], use_container_width=True):
             ir_a_detalles(ev)
             st.rerun()
-            
         st.write("")
 
 # ==============================================================================
-# VISTA 2: PÁGINA DE DETALLE Y FORMULARIO DE RESERVA
+# VISTA 2: DETALLE Y RESERVA
 # ==============================================================================
 elif st.session_state.vista == "detalle":
-    tope_pagina = st.container()
     ev = st.session_state.evento_sel
     
-    with tope_pagina:
-        if st.button("← Volver a la cartelera", key="btn_back"):
-            volver_a_lista()
-            st.rerun()
+    if st.button("← Volver", key="btn_back"):
+        volver_a_lista()
+        st.rerun()
 
-    st.write("")
-    
-    # --------------------------------------------------------------------------
-    # SUB-VISTA: PANTALLA FIJA DE CONFIRMACIÓN
-    # --------------------------------------------------------------------------
     if st.session_state.reserva_exitosa:
         st.balloons()
         info = st.session_state.info_reserva
+        st.success(f"🎉 ¡Pre-reserva registrada!")
+        st.markdown(f"**Evento:** {ev['titulo']}\n\n**A nombre de:** {info['nombre']}")
         
-        st.success(f"🎉 ¡Pre-reserva de {info['asientos']} asientos registrada exitosamente!")
-        
-        st.markdown("""
-            <div style="background-color: #16161F; padding: 20px; border-radius: 8px; border: 1px solid #E11D74; margin-bottom: 20px; text-align:center;">
-                <span style="color: #E11D74; font-size: 18px; font-weight: bold;">⚠️ ¡ÚLTIMO PASO OBLIGATORIO!</span><br><br>
-                <span style="font-size: 15px; color: #FFF;">Tus datos ya están guardados. Para validar definitivamente tus asientos, presiona el botón rosado de abajo para enviarnos el comprobante de transferencia directo a nuestro WhatsApp.</span>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        mensaje_wa = (
-            f"¡Hola! 🍹 Acabo de registrar una reserva desde la Ticketera Web.\n\n"
-            f"👤 *Nombre:* {info['nombre']}\n"
-            f"🆔 *RUT:* {info['rut']}\n"
-            f"📅 *Evento:* {ev['titulo']}\n"
-            f"🪑 *Asientos:* {info['asientos']}\n\n"
-            f"Acepto los términos de abono. Adjunto el comprobante de transferencia por $10.000 para validar."
-        )
-        mensaje_codificado = requests.utils.quote(mensaje_wa)
-        url_whatsapp = f"https://wa.me/56996777779?text={mensaje_codificado}"
-        
+        mensaje_wa = f"¡Hola! 🍹 Reservé mesa para {ev['titulo']} para {info['asientos']} personas a nombre de {info['nombre']}. Adjunto comprobante."
+        url_whatsapp = f"https://wa.me/56996777779?text={requests.utils.quote(mensaje_wa)}"
         st.link_button("🟢 Enviar Comprobante por WhatsApp", url_whatsapp, type="primary", use_container_width=True)
-        st.write("")
         
-        if st.button("Volver al Inicio", use_container_width=True):
+        if st.button("Ir al Inicio"):
             volver_a_lista()
             st.rerun()
-            
-    # --------------------------------------------------------------------------
-    # SUB-VISTA: FORMULARIO NORMAL
-    # --------------------------------------------------------------------------
     else:
         st.markdown(f"# {ev['titulo']}")
-        
         if ev['imagen']:
-            try:
-                st.image(ev['imagen'], use_container_width=True)
-            except:
-                pass
+            try: st.image(ev['imagen'], use_container_width=True)
+            except: pass
 
-        st.markdown(f"**📅 Fecha:** {ev['fecha']} | **⏰ Hora:** {ev['hora']}")
-        st.write("---")
-        
-        st.markdown("### Sobre este evento")
         st.markdown(ev['descripcion'])
         
-        html_pago = """
+        # Datos bancarios
+        st.markdown(f"""
         <div class="bank-box">
-            <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
-            <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible en el local) a la siguiente cuenta:</p>
-            <table style="width:100%; border-collapse: collapse; font-size: 14px; color: #FFF;">
-                <tr><td style="padding: 4px 0; color: #8E8E93;">Nombre del Titular:</td><td><b>Juan Carlos Quiroz</b></td></tr>
-                <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>Santander (Cuenta Corriente)</b></td></tr>
-                <tr><td style="padding: 4px 0; color: #8E8E93;">Rut:</td><td><b>11.633.847-5</b></td></tr>
-                <tr><td style="padding: 4px 0; color: #8E8E93;">N de Cuenta:</td><td><b>0000-64583867</b></td></tr>
-                <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
-                <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>repiolaclub@gmail.com</b></td></tr>
-            </table>
+            <h4 style="color: #FFF; margin:0;">Datos para Abono ($10.000)</h4>
+            <p style="font-size: 14px; color: #FFF;">
+            <b>Titular:</b> Juan Carlos Quiroz<br>
+            <b>Rut:</b> 11.633.847-5<br>
+            <b>Banco:</b> Santander / Cuenta Corriente<br>
+            <b>Cuenta:</b> 64583867<br>
+            <b>Email:</b> repiolaclub@gmail.com
+            </p>
         </div>
-        """
-        st.markdown(html_pago, unsafe_allow_html=True)
-            
-        with st.expander("📝 Términos, condiciones y políticas de asistencia"):
-            st.markdown(ev['politicas'])
-        
-        st.write("")
+        """, unsafe_allow_html=True)
 
-        with st.form("formulario_reserva_dinamico"):
-            st.markdown("### Completa tus datos para pre-reservar")
-            st.caption("Recuerda que para validar este espacio deberás enviar el comprobante de transferencia.")
-            
-            asientos_solicitados = st.selectbox(
-                "¿Cuántos asientos necesitas para tu grupo?",
-                list(range(1, 21)),
-                format_func=lambda x: f"Mesa / Espacio para {x} persona{'s' if x > 1 else ''}",
-                key=f"select_asientos_{ev['id']}"
-            )
+        with st.form("form_reserva"):
+            asientos = st.selectbox("Personas", list(range(1, 21)))
+            nombre = st.text_input("Tu Nombre")
+            rut = st.text_input("Tu RUT")
+            enviar = st.form_submit_button("Confirmar Reserva")
 
-            nombre = st.text_input("Nombre completo de quien asiste", key=f"input_nombre_{ev['id']}")
-            rut = st.text_input("RUT del titular (para validar en puerta)", key=f"input_rut_{ev['id']}")
-
-            boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio", use_container_width=True)
-
-        if boton_confirmar:
-            if nombre and rut:
-                try:
-                    url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
-                    datos_reserva_forms = {
-                        "entry.2041447904": ev['titulo'],
-                        "entry.44496726": f"{asientos_solicitados} Asientos",
-                        "entry.970850673": nombre,
-                        "entry.2047753483": rut,
-                    }
-
-                    respuesta = requests.post(url_formulario, data=datos_reserva_forms)
-
-                    if respuesta.status_code == 200:
-                        datos_nueva_reserva = {
-                            "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                            "Evento": ev['titulo'],
-                            "Mesa": f"{asientos_solicitados} Asientos",
-                            "Nombre": nombre,
-                            "RUT": rut,
-                            "Estado": "Pendiente",
-                        }
-                        nueva_reserva_df = pd.DataFrame([datos_nueva_reserva])
-                        nueva_reserva_df.to_csv(
-                            "reservas_local.csv",
-                            mode="a",
-                            header=not os.path.exists("reservas_local.csv"),
-                            index=False,
-                        )
-
-                        st.session_state.info_reserva = {
-                            "nombre": nombre,
-                            "rut": rut,
-                            "asientos": asientos_solicitados
-                        }
+            if enviar:
+                if nombre and rut:
+                    # Guardar en Google Forms (usando tus mismos IDs del código anterior)
+                    try:
+                        requests.post("https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse", 
+                            data={
+                                "entry.2041447904": ev['titulo'],
+                                "entry.44496726": f"{asientos} Asientos",
+                                "entry.970850673": nombre,
+                                "entry.2047753483": rut,
+                            })
+                        st.session_state.info_reserva = {"nombre": nombre, "asientos": asientos}
                         st.session_state.reserva_exitosa = True
                         st.rerun()
-                        
-                    else:
-                        st.error(f"Error de comunicación con el servidor (Código {respuesta.status_code}).")
-                        
-                except Exception as e:
-                    st.error(f"Error al procesar la reserva: {e}")
-            else:
-                st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
+                    except:
+                        st.error("Error al conectar.")
+                else:
+                    st.warning("Completa los datos.")
