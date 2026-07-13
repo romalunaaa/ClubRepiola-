@@ -124,7 +124,7 @@ LISTA_EVENTOS_CRUDO = [
         "show_info": "Entrada Liberada",
         "descripcion": """¡Una noche mágica de poesía y encuentro cultural en el Bar Repiola! ✨ 
 
-Ven a disfrutar de una íntima velada artística con la presentación de destacados creadores e ilustradores locales.
+Ven a disfrutar de una íntima velada artística con la presentación de destacados creadores.
 
 **Invitados Especiales:**
 * Pavella Coppola
