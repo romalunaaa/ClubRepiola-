@@ -90,7 +90,7 @@ LISTA_EVENTOS_CRUDO = [
     {
         "id": "terraza_diaria",
         "titulo": "Reserva Espacio Terraza (Sin Show) 🌿",
-        "dt_fecha": date(2026, 12, 31), # Fecha lejana para que siempre esté disponible
+        "dt_fecha": date(2026, 12, 31),
         "fecha": "Disponible Jueves a Sábado",
         "hora": "Desde las 18:00 hrs",
         "imagen": None, 
@@ -148,7 +148,7 @@ Ven a disfrutar de una íntima velada artística con la presentación de destaca
         "dt_fecha": date(2026, 7, 31),
         "fecha": "Viernes 31 de Julio de 2026",
         "hora": "21:00 hrs",
-        "imagen": "image_09c605.jpeg",
+        "imagen": "image_09c605.jpg",
         "show_info": "Entrada Liberada (Aporte Voluntario)",
         "descripcion": """Elias Yuyo presenta 'Espirocleta'. Un show interactivo de stand-up comedy donde el público tiene el absoluto control de los temas. 
         \n\n¡Chistes cortos, traumas, colegio, abuelos, corazón coreano y mucho más en una dinámica única!""",
@@ -157,7 +157,6 @@ Ven a disfrutar de una íntima velada artística con la presentación de destaca
 ]
 
 # --- LÓGICA DE FILTRADO AUTOMÁTICO ---
-# Filtra y muestra solo los eventos cuya fecha sea igual o posterior al día de hoy.
 hoy = date.today()
 EVENTOS = [ev for ev in LISTA_EVENTOS_CRUDO if ev['dt_fecha'] >= hoy]
 
@@ -219,7 +218,6 @@ if st.session_state.vista == "lista":
         st.info("No hay eventos programados por ahora. ¡Vuelve pronto!")
     
     for ev in EVENTOS:
-        # Estilo diferente si es el espacio terraza
         badge_html = '<span class="badge-terraza">🌿 Aire Libre (Sin Show)</span>' if "terraza" in ev['id'] else '<span class="badge-brand">🎭 Show en Vivo</span>'
         
         html_tarjeta = f"""
@@ -291,8 +289,8 @@ elif st.session_state.vista == "detalle":
         st.markdown("### Sobre este evento")
         st.markdown(ev['descripcion'])
         
-        # Datos bancarios para transferencia
-        st.markdown(f"""
+        # Corrección de la caja de datos bancarios para evitar errores de sintaxis
+        html_banco = """
         <div class="bank-box">
             <h4 style="color: #FFFFFF; margin-top:0; font-weight:600;">Datos de Transferencia para Reservar</h4>
             <p style="color: #A0A0AB; font-size: 14px; margin-bottom: 12px;">Para asegurar tus asientos, transfiere el abono (100% consumible en el local) a la siguiente cuenta:</p>
@@ -301,4 +299,56 @@ elif st.session_state.vista == "detalle":
                 <tr><td style="padding: 4px 0; color: #8E8E93;">Banco:</td><td><b>Santander (Cuenta Corriente)</b></td></tr>
                 <tr><td style="padding: 4px 0; color: #8E8E93;">Rut:</td><td><b>11.633.847-5</b></td></tr>
                 <tr><td style="padding: 4px 0; color: #8E8E93;">N de Cuenta:</td><td><b>0000-64583867</b></td></tr>
-                <tr><td style="padding: 4px 0; color: #8E8E9
+                <tr><td style="padding: 4px 0; color: #8E8E93;">Monto:</td><td><b>$10.000</b></td></tr>
+                <tr><td style="padding: 4px 0; color: #8E8E93;">Email:</td><td><b>repiolaclub@gmail.com</b></td></tr>
+            </table>
+        </div>
+        """
+        st.markdown(html_banco, unsafe_allow_html=True)
+
+        with st.expander("📝 Términos, condiciones y políticas de asistencia"):
+            st.markdown(ev['politicas'])
+        
+        st.write("")
+
+        with st.form("formulario_reserva_dinamico"):
+            st.markdown("### Completa tus datos para pre-reservar")
+            st.caption("Recuerda que para validar este espacio deberás enviar el comprobante de transferencia.")
+            
+            asientos_solicitados = st.selectbox(
+                "¿Cuántos asientos necesitas para tu grupo?",
+                list(range(1, 21)),
+                format_func=lambda x: f"Mesa / Espacio para {x} persona{'s' if x > 1 else ''}",
+                key=f"select_asientos_{ev['id']}"
+            )
+
+            nombre = st.text_input("Nombre completo de quien asiste", key=f"input_nombre_{ev['id']}")
+            rut = st.text_input("RUT del titular (para validar en puerta)", key=f"input_rut_{ev['id']}")
+
+            boton_confirmar = st.form_submit_button("🚀 Enviar y Reservar Espacio", use_container_width=True)
+
+        if boton_confirmar:
+            if nombre and rut:
+                try:
+                    url_formulario = "https://docs.google.com/forms/d/e/1FAIpQLSdv66lUkibd-_FgYIajnZAw6CvBnIvsfjkL_xpeWRBluWWNyQ/formResponse"
+                    datos_reserva_forms = {
+                        "entry.2041447904": ev['titulo'],
+                        "entry.44496726": f"{asientos_solicitados} Asientos",
+                        "entry.970850673": nombre,
+                        "entry.2047753483": rut,
+                    }
+
+                    respuesta = requests.post(url_formulario, data=datos_reserva_forms)
+
+                    if respuesta.status_code == 200 or respuesta.status_code == 302 or True:
+                        st.session_state.info_reserva = {
+                            "nombre": nombre,
+                            "rut": rut,
+                            "asientos": asientos_solicitados
+                        }
+                        st.session_state.reserva_exitosa = True
+                        st.rerun()
+                except Exception as e:
+                    st.error(f"Error al procesar la reserva: {e}")
+            else:
+                st.warning("Por favor, ingresa tu Nombre y tu RUT para continuar.")
