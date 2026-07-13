@@ -148,7 +148,7 @@ Ven a disfrutar de una íntima velada artística con la presentación de destaca
         "dt_fecha": date(2026, 7, 31),
         "fecha": "Viernes 31 de Julio de 2026",
         "hora": "21:00 hrs",
-        "imagen": "image_09c605.jpg",
+        "imagen": "image_09c605.jpeg",
         "show_info": "Entrada Liberada (Aporte Voluntario)",
         "descripcion": """Elias Yuyo presenta 'Espirocleta'. Un show interactivo de stand-up comedy donde el público tiene el absoluto control de los temas. 
         \n\n¡Chistes cortos, traumas, colegio, abuelos, corazón coreano y mucho más en una dinámica única!""",
