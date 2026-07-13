@@ -122,7 +122,7 @@ LISTA_EVENTOS_CRUDO = [
         "hora": "20:00 hrs",
         "imagen": "image_465742.jpeg",
         "show_info": "Entrada Liberada",
-        "descripcion": """¡Una noche mágica de poesía, ilustración y encuentro cultural en el Bar Repiola! ✨ 
+        "descripcion": """¡Una noche mágica de poesía y encuentro cultural en el Bar Repiola! ✨ 
 
 Ven a disfrutar de una íntima velada artística con la presentación de destacados creadores e ilustradores locales.
 
@@ -134,7 +134,6 @@ Ven a disfrutar de una íntima velada artística con la presentación de destaca
 * Seis
 * César Millahueique
 
-🎨 *Ilustración en vivo por Memy & Carnivale.*""",
         "politicas": """
 * **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
 * **Entrada Liberada:** El evento cuenta con acceso liberado. Te sugerimos realizar un aporte voluntario para apoyar el trabajo de los artistas invitados.
