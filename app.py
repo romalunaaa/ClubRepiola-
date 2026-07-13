@@ -108,7 +108,7 @@ LISTA_EVENTOS_CRUDO = [
         "dt_fecha": date(2026, 7, 10), # Ya pasó (10 de Julio), se filtrará automáticamente
         "fecha": "Viernes 10 de Julio de 2026",
         "hora": "21:30 hrs",
-        "imagen": "image_09c622.jpg",
+        "imagen": "image_09c622.jpeg",
         "show_info": "Entrada Liberada (Aporte Voluntario)",
         "descripcion": """¡Vuelve el humor al Club! Carlos Encina presenta 'Tengo problemas con el frío - Wenachoro'. 
         Una rutina cargada de risas para pasar el invierno de la mejor manera.""",
@@ -120,7 +120,7 @@ LISTA_EVENTOS_CRUDO = [
         "dt_fecha": date(2026, 7, 24),
         "fecha": "Viernes 24 de Julio de 2026",
         "hora": "20:00 hrs",
-        "imagen": "image_465742.jpg",
+        "imagen": "image_465742.jpeg",
         "show_info": "Entrada Liberada",
         "descripcion": """¡Una noche mágica de poesía, ilustración y encuentro cultural en el Bar Repiola! ✨ 
 
@@ -148,7 +148,7 @@ Ven a disfrutar de una íntima velada artística con la presentación de destaca
         "dt_fecha": date(2026, 7, 31),
         "fecha": "Viernes 31 de Julio de 2026",
         "hora": "21:00 hrs",
-        "imagen": "image_09c605.jpg",
+        "imagen": "image_09c605.jpeg",
         "show_info": "Entrada Liberada (Aporte Voluntario)",
         "descripcion": """Elias Yuyo presenta 'Espirocleta'. Un show interactivo de stand-up comedy donde el público tiene el absoluto control de los temas. 
         \n\n¡Chistes cortos, traumas, colegio, abuelos, corazón coreano y mucho más en una dinámica única!""",
