@@ -132,7 +132,7 @@ Ven a disfrutar de una íntima velada artística con la presentación de destaca
 * Fer Olivares Pereira
 * Octavio Gallardo
 * Seis
-* César Millahueique
+* César Millahueique*""",
 
         "politicas": """
 * **Abono Consumible:** El valor para reservar tus asientos es de **$10.000**, los cuales se descuentan en su totalidad de lo que consumas en el local.
